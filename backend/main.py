@@ -26,6 +26,9 @@ app.add_middleware(
 class CardData(BaseModel):
     card_id: str
 
+# Store latest scanned card for browser console logging
+latest_card = {"id": None}
+
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
@@ -34,9 +37,17 @@ def read_root():
 def health_check():
     return {"status": "healthy"}
 
+@app.get("/latest-card")
+def get_latest_card():
+    """Get the latest scanned card for console logging"""
+    return latest_card
+
 @app.post("/submit")
 def submit_data(card_data: CardData):
     print(f"Card scanned: {card_data.card_id}")
+    
+    # Update latest card for browser console
+    latest_card["id"] = card_data.card_id
     
     # Save to Supabase
     result = supabase.table("CreaLab_visitors").insert({"id_card": card_data.card_id}).execute()
