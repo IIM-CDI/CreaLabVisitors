@@ -29,6 +29,10 @@ const Inscription = ({card_id}: InscriptionInterface) => {
         .catch((error) => {
             console.error("Error:", error);
         });
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
     }
 
     return (

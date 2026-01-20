@@ -28,11 +28,11 @@ const Login = () => {
 
     return (
         <div className="Login">
-            <h2>Login Page</h2>
+            {existingCardId === null && <h2>Login Page</h2>}
             <div className="window_container">
                 {existingCardId === null && <p>Please scan your card to proceed.</p>}
                 {existingCardId === false && scannedCardId && <Inscription card_id={scannedCardId} />}
-                {existingCardId === true && <Connexion />}
+                {existingCardId === true && scannedCardId && <Connexion card_id={scannedCardId} />}
             </div>
         </div>
     );

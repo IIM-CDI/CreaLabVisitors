@@ -82,3 +82,12 @@ def submit_data(data: ProfilData):
         "email": data.email
     }).execute()
     return {"message": f"Card {data.card_id} received successfully"}
+
+@app.get("/get-profile/{card_id}")
+def get_profile(card_id: str):
+    result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
+    print(result.data)
+    if len(result.data) > 0:
+        return {"found": True, "data": result.data[0]}
+    else:
+        return {"found": False}
