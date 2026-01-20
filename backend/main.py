@@ -50,6 +50,16 @@ def get_card(card_data: CardData):
 
     return {"message": f"Card {card_data.card_id} received successfully"}
 
+@app.get("/check-card/{card_id}")
+def check_existing_card(card_id: str):
+    result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
+    print(result.data)
+    exists = len(result.data) > 0
+    if exists:
+        return {"exists": True, "data": result.data}
+    else:
+        return {"exists": False}
+
 # @app.post("/submit")
 # def submit_data(card_data: CardData):
 #     print(f"Card scanned: {card_data.card_id}")
