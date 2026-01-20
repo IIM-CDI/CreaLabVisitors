@@ -42,14 +42,22 @@ def get_latest_card():
     """Get the latest scanned card for console logging"""
     return latest_card
 
-@app.post("/submit")
-def submit_data(card_data: CardData):
+@app.post("/getCard")
+def get_card(card_data: CardData):
     print(f"Card scanned: {card_data.card_id}")
-    
-    # Update latest card for browser console
+
     latest_card["id"] = card_data.card_id
+
+    return {"message": f"Card {card_data.card_id} received successfully"}
+
+# @app.post("/submit")
+# def submit_data(card_data: CardData):
+#     print(f"Card scanned: {card_data.card_id}")
     
-    # Save to Supabase
-    result = supabase.table("CreaLab_visitors").insert({"id_card": card_data.card_id}).execute()
+#     # Update latest card for browser console
+#     latest_card["id"] = card_data.card_id
     
-    return {"message": f"Card {card_data.card_id} received successfully", "data": result.data}
+#     # Save to Supabase
+#     result = supabase.table("CreaLab_visitors").insert({"id_card": card_data.card_id}).execute()
+    
+#     return {"message": f"Card {card_data.card_id} received successfully", "data": result.data}

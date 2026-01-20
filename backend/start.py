@@ -27,7 +27,7 @@ def run_card_reader():
                 print("HEX :", card_id)
             
             try:
-                requests.post("http://localhost:8000/submit", json={"card_id": card_id})
+                requests.post("http://localhost:8000/getCard", json={"card_id": card_id})
             except:
                 pass
 
