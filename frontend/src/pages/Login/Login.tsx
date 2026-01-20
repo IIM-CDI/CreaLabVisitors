@@ -11,7 +11,6 @@ const Login = () => {
     useEffect(() => {
         setCardScanCallback((id: string) => setScannedCardId(id));
         const checkExistingCard = async (id: string) => {
-            console.log("Checking existing card for ID:", id);
             try {
                 const response = await fetch(`http://localhost:8000/check-card/${id}`);
                 const data = await response.json();

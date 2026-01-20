@@ -1,8 +1,6 @@
-// Simple card scan listener with callback support
 let previousId: string | null = null;
 let onCardScanned: ((id: string) => void) | null = null;
 
-// Function to set the callback (components can call this to listen for scans)
 export const setCardScanCallback = (callback: (id: string) => void) => {
     onCardScanned = callback;
 };
@@ -12,7 +10,7 @@ export const checkScan = async () => {
         const response = await fetch("http://localhost:8000/latest-card");
         const data = await response.json();
         if (data.id && data.id !== previousId) {
-            console.log(`🎫 Card Scanned: ${data.id} at ${new Date().toLocaleTimeString()}`);
+            console.log(`Card scanned: ${data.id}`);
             previousId = data.id;
             if (onCardScanned) onCardScanned(data.id);
         }
@@ -21,5 +19,4 @@ export const checkScan = async () => {
     }
 };
 
-// Auto-check for scanned cards every 2 seconds
 setInterval(checkScan, 2000);

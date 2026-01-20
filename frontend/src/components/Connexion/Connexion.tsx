@@ -14,14 +14,11 @@ const Connexion = (props: ConnexionInterface) => {
         .then(response => response.json())
         .then(data => {
             if (data.found) {
-                console.log("Profile Data:", data.data);
                 setUserData(data.data);
-            } else {
-                console.log("No profile found for this card.");
             }
         })
         .catch((error) => {
-            console.error("Error:", error);
+            console.error("Error fetching profile:", error);
         });
     }
 

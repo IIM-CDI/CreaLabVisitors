@@ -5,34 +5,29 @@ interface InscriptionInterface {
     card_id: string;
 };
 
+
 const Inscription = ({card_id}: InscriptionInterface) => {
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
+        const formEl = event.target as HTMLFormElement;
 
-        const formData = new FormData(event.target as HTMLFormElement);
+        const formData = new FormData(formEl);
         const prenom = formData.get("prenom");
         const nom = formData.get("nom");
         const email = formData.get("email");
 
         fetch("http://localhost:8000/submit", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ prenom, nom, email, card_id }),
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Success:", data);
+        .then(() => {
+            formEl.reset();
         })
         .catch((error) => {
-            console.error("Error:", error);
+            console.error("Error submitting profile:", error);
         });
-
-        setTimeout(() => {
-            window.location.reload();
-        }, 2000);
     }
 
     return (
