@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./Login.css";
 import Inscription from "../../components/Inscription/Inscription";
+import Connexion from "../../components/Connexion/Connexion";
 import { setCardScanCallback } from "../../services/cardScanListener";
 
 const Login = () => {
@@ -28,9 +29,10 @@ const Login = () => {
     return (
         <div className="Login">
             <h2>Login Page</h2>
-            {scannedCardId && <p>{existingCardId ? "Card exists" : "Card does not exist"} Scanned Card ID: {scannedCardId}</p>}
             <div className="window_container">
-                <Inscription />
+                {existingCardId === null && <p>Please scan your card to proceed.</p>}
+                {existingCardId === false && scannedCardId && <Inscription card_id={scannedCardId} />}
+                {existingCardId === true && <Connexion />}
             </div>
         </div>
     );

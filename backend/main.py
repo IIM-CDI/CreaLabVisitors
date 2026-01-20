@@ -15,9 +15,11 @@ supabase = create_client(
     os.getenv("SUPABASE_KEY")
 )
 
+# Allow only the frontend origin when credentials are used.
+# Using '*' together with allow_credentials=True is not valid and can prevent CORS headers.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[os.getenv("FRONTEND_URL")], # Modify later with good URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -25,6 +27,12 @@ app.add_middleware(
 
 class CardData(BaseModel):
     card_id: str
+
+class ProfilData(BaseModel):
+    card_id: str
+    prenom: str
+    nom: str
+    email: str
 
 # Store latest scanned card for browser console logging
 latest_card = {"id": None}
@@ -60,14 +68,17 @@ def check_existing_card(card_id: str):
     else:
         return {"exists": False}
 
-# @app.post("/submit")
-# def submit_data(card_data: CardData):
-#     print(f"Card scanned: {card_data.card_id}")
-    
-#     # Update latest card for browser console
-#     latest_card["id"] = card_data.card_id
-    
-#     # Save to Supabase
-#     result = supabase.table("CreaLab_visitors").insert({"id_card": card_data.card_id}).execute()
-    
-#     return {"message": f"Card {card_data.card_id} received successfully", "data": result.data}
+@app.post("/submit")
+def submit_data(data: ProfilData):
+    print(f"Card scanned: {data.card_id}")
+
+    # Update latest card for browser console
+    latest_card["id"] = data.card_id
+    # Save to Supabase
+    supabase.table("CreaLab_visitors").insert({
+        "id_card": data.card_id,
+        "first_name": data.prenom,
+        "last_name": data.nom,
+        "email": data.email
+    }).execute()
+    return {"message": f"Card {data.card_id} received successfully"}

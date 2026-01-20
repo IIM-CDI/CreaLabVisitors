@@ -43,6 +43,7 @@
     border: none;
 }
 
-.form_email {
-    grid-column: span 2;
+.form_email, .form_card_id {
+    grid-column-start: 1;
+    grid-column-end: 3;
 }
