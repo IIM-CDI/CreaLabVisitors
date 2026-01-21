@@ -1,22 +1,37 @@
+import { io, Socket } from "socket.io-client";
+
 let previousId: string | null = null;
 let onCardScanned: ((id: string) => void) | null = null;
+let socket: Socket | null = null;
 
 export const setCardScanCallback = (callback: (id: string) => void) => {
     onCardScanned = callback;
 };
 
-export const checkScan = async () => {
-    try {
-        const response = await fetch("http://localhost:8000/latest-card");
-        const data = await response.json();
-        if (data.id && data.id !== previousId) {
-            console.log(`Card scanned: ${data.id}`);
-            previousId = data.id;
-            if (onCardScanned) onCardScanned(data.id);
+const initSocket = () => {
+    if (socket) return;
+    socket = io("http://localhost:8000", { transports: ["websocket"] });
+
+    socket.on("connect", () => {
+        console.log("Card socket connected", socket?.id);
+    });
+
+    socket.on("card_scanned", (cardId: string) => {
+        try {
+            if (cardId && cardId !== previousId) {
+                console.log(`Card scanned (socket): ${cardId}`);
+                previousId = cardId;
+                if (onCardScanned) onCardScanned(cardId);
+            }
+        } catch (err) {
+            console.error("Error handling card_scanned event:", err);
         }
-    } catch (error) {
-        console.error("Error checking card scan:", error);
-    }
+    });
+
+    socket.on("disconnect", () => {
+        console.log("Card socket disconnected");
+    });
 };
 
-setInterval(checkScan, 2000);
+// initialize socket listener immediately
+initSocket();

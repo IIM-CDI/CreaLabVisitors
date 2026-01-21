@@ -4,3 +4,4 @@ pyserial
 requests
 supabase
 python-dotenv
+python-socketio[asgi]
