@@ -2,55 +2,62 @@ import React, { useEffect, useState } from "react";
 import Modification from "../Modification/Modification";
 import "./Connexion.css";
 
-interface ConnexionInterface {
+interface ConnexionProps {
     card_id: string;
-};
+}
 
-const Connexion = (props: ConnexionInterface) => {
+interface UserData {
+    first_name: string;
+    last_name: string;
+    email: string;
+    [key: string]: any;
+}
 
-    const [userData, setUserData] = useState<any>(null);
-    const [modificationOpen, setModificationOpen] = useState<boolean>(false);
+const Connexion = ({ card_id }: ConnexionProps) => {
+    const [userData, setUserData] = useState<UserData | null>(null);
+    const [modificationOpen, setModificationOpen] = useState(false);
 
-    const getProfile = (card_id: string) => {
-        fetch(`http://localhost:8000/get-profile/${card_id}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.found) {
-                setUserData(data.data);
-            }
-        })
-        .catch((error) => {
+    const getProfile = async (id: string) => {
+        try {
+            const response = await fetch(`http://localhost:8000/get-profile/${id}`);
+            const data = await response.json();
+            if (data?.found) setUserData(data.data);
+        } catch (error) {
             console.error("Error fetching profile:", error);
-        });
-    }
+        }
+    };
 
     useEffect(() => {
-        getProfile(props.card_id);
-    }, [props.card_id]);
+        if (card_id) getProfile(card_id);
+    }, [card_id]);
 
     return (
         <div className="connexion_container">
-            {userData ?  (
+            {userData ? (
                 modificationOpen ? (
-                    <Modification 
-                        prenom={userData.first_name} 
-                        nom={userData.last_name} 
-                        email={userData.email} 
-                        card_id={props.card_id} 
+                    <Modification
+                        prenom={userData.first_name}
+                        nom={userData.last_name}
+                        email={userData.email}
+                        card_id={card_id}
                         setModificationOpen={setModificationOpen}
                     />
                 ) : (
                     <div className="user_info">
-                        <p> Bonjour {userData.first_name} {userData.last_name} !</p>
+                        <p>
+                            Bonjour {userData.first_name} {userData.last_name} !
+                        </p>
                         <p>Email: {userData.email}</p>
-                        <button onClick={() => setModificationOpen(true)}>Modifier les informations</button>
+                        <button onClick={() => setModificationOpen(true)}>
+                            Modifier les informations
+                        </button>
                     </div>
                 )
             ) : (
-                <p>Loading user data...</p>
+                <p>Chargement des informations...</p>
             )}
         </div>
     );
-}
+};
 
 export default Connexion;

@@ -1,7 +1,7 @@
 import React from "react";
 import "./Modification.css";
 
-interface ModificationInterface {
+interface ModificationProps {
     prenom: string;
     nom: string;
     email: string;
@@ -9,30 +9,30 @@ interface ModificationInterface {
     setModificationOpen?: (open: boolean) => void;
 }
 
-const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: ModificationInterface) => {
-
-    const handleSubmit = (event: React.FormEvent) => {
+const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: ModificationProps) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         const formEl = event.target as HTMLFormElement;
-
         const formData = new FormData(formEl);
-        const updatedPrenom = formData.get("prenom");
-        const updatedNom = formData.get("nom");
-        const updatedEmail = formData.get("email");
 
-        fetch("http://localhost:8000/update-profile", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prenom: updatedPrenom, nom: updatedNom, email: updatedEmail, card_id }),
-        })
-        .then(() => {
+        const updatedPrenom = String(formData.get("prenom") || "");
+        const updatedNom = String(formData.get("nom") || "");
+        const updatedEmail = String(formData.get("email") || "");
+
+        try {
+            await fetch("http://localhost:8000/update-profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prenom: updatedPrenom, nom: updatedNom, email: updatedEmail, card_id }),
+            });
             formEl.reset();
+            if (setModificationOpen) setModificationOpen(false);
+            // keep reload as a fallback to refresh displayed data
             window.location.reload();
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error("Error updating profile:", error);
-        });
-    }
+        }
+    };
 
     return (
         <div className="modification_container">
@@ -52,13 +52,15 @@ const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: Modi
                 </label>
                 <label className="form_card_id">
                     Card ID:
-                    <input type="text" name="card_id" value={card_id} disabled />
+                    <input type="text" name="card_id" value={card_id} readOnly />
                 </label>
-                <button type="button" onClick={() => setModificationOpen && setModificationOpen(false)}>Annuler</button>
+                <button type="button" onClick={() => setModificationOpen && setModificationOpen(false)}>
+                    Annuler
+                </button>
                 <button type="submit">Enregistrer les modifications</button>
             </form>
         </div>
     );
-}
+};
 
 export default Modification;
