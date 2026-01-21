@@ -6,9 +6,10 @@ interface ModificationInterface {
     nom: string;
     email: string;
     card_id: string;
+    setModificationOpen?: (open: boolean) => void;
 }
 
-const Modification = ({ prenom, nom, email, card_id }: ModificationInterface) => {
+const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: ModificationInterface) => {
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -53,7 +54,8 @@ const Modification = ({ prenom, nom, email, card_id }: ModificationInterface) =>
                     Card ID:
                     <input type="text" name="card_id" value={card_id} disabled />
                 </label>
-                <button type="submit">Enattend la macregistrer les modifications</button>
+                <button type="button" onClick={() => setModificationOpen && setModificationOpen(false)}>Annuler</button>
+                <button type="submit">Enregistrer les modifications</button>
             </form>
         </div>
     );

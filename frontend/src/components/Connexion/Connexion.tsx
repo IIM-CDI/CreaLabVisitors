@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Modification from "../Modification/Modification";
 import "./Connexion.css";
 
 interface ConnexionInterface {
@@ -7,7 +8,8 @@ interface ConnexionInterface {
 
 const Connexion = (props: ConnexionInterface) => {
 
-    const [userData, setUserData] = React.useState<any>(null);
+    const [userData, setUserData] = useState<any>(null);
+    const [modificationOpen, setModificationOpen] = useState<boolean>(false);
 
     const getProfile = (card_id: string) => {
         fetch(`http://localhost:8000/get-profile/${card_id}`)
@@ -28,12 +30,22 @@ const Connexion = (props: ConnexionInterface) => {
 
     return (
         <div className="connexion_container">
-            <h2>Connexion</h2>
-            {userData ? (
-                <div className="user_info">
-                    <p>Connecté en tant que : {userData.first_name} {userData.last_name} </p>
-                    <p>Email : {userData.email}</p>
-                </div>
+            {userData ?  (
+                modificationOpen ? (
+                    <Modification 
+                        prenom={userData.first_name} 
+                        nom={userData.last_name} 
+                        email={userData.email} 
+                        card_id={props.card_id} 
+                        setModificationOpen={setModificationOpen}
+                    />
+                ) : (
+                    <div className="user_info">
+                        <p> Bonjour {userData.first_name} {userData.last_name} !</p>
+                        <p>Email: {userData.email}</p>
+                        <button onClick={() => setModificationOpen(true)}>Modifier les informations</button>
+                    </div>
+                )
             ) : (
                 <p>Loading user data...</p>
             )}
