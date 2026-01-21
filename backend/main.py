@@ -92,6 +92,15 @@ def submit_data(data: ProfilData):
     }).execute()
     return {"message": f"Card {data.card_id} received successfully"}
 
+@fastapi_app.post("/update-profile")
+def update_profile(data: ProfilData):
+    logging.info("Updating profile for card: %s", data.card_id)
+    supabase.table("CreaLab_visitors").update({
+        "first_name": data.prenom,
+        "last_name": data.nom,
+        "email": data.email
+    }).eq("id_card", data.card_id).execute()
+    return {"message": f"Profile for card {data.card_id} updated successfully"}
 
 @fastapi_app.get("/get-profile/{card_id}")
 def get_profile(card_id: str):
