@@ -3,6 +3,7 @@ import './App.css';
 import Login from './pages/Login/Login';
 import Header from './layout/header/Header';
 import { setCardScanCallback } from './services/cardScanListener';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   const [scannedCardId, setScannedCardId] = useState<string | null>(null);
@@ -13,10 +14,12 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <Header setScannedCardId={setScannedCardId} />
-      <Login scannedCardId={scannedCardId} />
-    </div>
+    <AuthProvider>
+      <div className="App">
+        <Header setScannedCardId={setScannedCardId} />
+        <Login scannedCardId={scannedCardId} />
+      </div>
+    </AuthProvider>
   );
 }
 
