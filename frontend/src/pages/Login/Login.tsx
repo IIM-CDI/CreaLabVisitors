@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import "./Login.css";
 import Inscription from "../../components/Inscription/Inscription";
 import Connexion from "../../components/Connexion/Connexion";
-import { setCardScanCallback } from "../../services/cardScanListener";
 
-const Login = () => {
-    const [scannedCardId, setScannedCardId] = useState<string | null>(null);
+type Props = {
+    scannedCardId: string | null;
+};
+
+const Login = ({ scannedCardId }: Props) => {
     const [existingCardId, setExistingCardId] = useState<boolean | null>(null);
     
     useEffect(() => {
-        setCardScanCallback((id: string) => setScannedCardId(id));
         const checkExistingCard = async (id: string) => {
             try {
                 const response = await fetch(`http://localhost:8000/check-card/${id}`);
@@ -21,8 +22,9 @@ const Login = () => {
         }
         if (scannedCardId) {
             checkExistingCard(scannedCardId);
+        } else {
+            setExistingCardId(null);
         }
-        return () => setCardScanCallback(() => {});
     }, [scannedCardId]);
 
     return (
