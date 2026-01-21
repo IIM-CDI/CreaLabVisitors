@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useAuth } from '../../context/AuthContext';
 import Modification from "../Modification/Modification";
 import "./Connexion.css";
 
@@ -17,9 +18,13 @@ const Connexion = ({ card_id }: ConnexionProps) => {
     const [userData, setUserData] = useState<UserData | null>(null);
     const [modificationOpen, setModificationOpen] = useState(false);
 
+    const { token } = useAuth();
+
     const getProfile = async (id: string) => {
         try {
-            const response = await fetch(`http://localhost:8000/get-profile/${id}`);
+            const headers: Record<string,string> = { "Content-Type": "application/json" };
+            if (token) headers["Authorization"] = `Bearer ${token}`;
+            const response = await fetch(`http://localhost:8000/get-profile/${id}`, { headers });
             const data = await response.json();
             if (data?.found) setUserData(data.data);
         } catch (error) {

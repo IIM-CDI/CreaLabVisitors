@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Login.css";
 import Inscription from "../../components/Inscription/Inscription";
 import Connexion from "../../components/Connexion/Connexion";
+import { useAuth } from '../../context/AuthContext';
 
 type Props = {
     scannedCardId: string | null;
@@ -9,6 +10,7 @@ type Props = {
 
 const Login = ({ scannedCardId }: Props) => {
     const [existingCardId, setExistingCardId] = useState<boolean | null>(null);
+    const { setToken } = useAuth();
     
     useEffect(() => {
         const checkExistingCard = async (id: string) => {
@@ -16,6 +18,9 @@ const Login = ({ scannedCardId }: Props) => {
                 const response = await fetch(`http://localhost:8000/check-card/${id}`);
                 const data = await response.json();
                 setExistingCardId(data.exists);
+                if (data.exists && data.token) {
+                    setToken(data.token);
+                }
             } catch (error) {
                 console.error("Error checking existing card:", error);
             }

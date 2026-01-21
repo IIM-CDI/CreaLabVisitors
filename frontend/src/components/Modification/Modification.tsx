@@ -1,4 +1,5 @@
 import React from "react";
+import { useAuth } from '../../context/AuthContext';
 import "./Modification.css";
 
 interface ModificationProps {
@@ -10,6 +11,8 @@ interface ModificationProps {
 }
 
 const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: ModificationProps) => {
+    const { token } = useAuth();
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         const formEl = event.target as HTMLFormElement;
@@ -20,9 +23,11 @@ const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: Modi
         const updatedEmail = String(formData.get("email") || "");
 
         try {
+            const headers: Record<string,string> = { "Content-Type": "application/json" };
+            if (token) headers["Authorization"] = `Bearer ${token}`;
             await fetch("http://localhost:8000/update-profile", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers,
                 body: JSON.stringify({ prenom: updatedPrenom, nom: updatedNom, email: updatedEmail, card_id }),
             });
             formEl.reset();

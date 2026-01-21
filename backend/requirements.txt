@@ -5,3 +5,4 @@ requests
 supabase
 python-dotenv
 python-socketio[asgi]
+PyJWT
