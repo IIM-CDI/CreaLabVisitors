@@ -1,10 +1,10 @@
-.app_header{
-    background-color: #282c34;
-    height: 60px;
-    color: white;
+.app_header {
     display: flex;
     align-items: center;
+    height: 60px;
     padding: 0 20px;
+    background-color: #282c34;
+    color: #fff;
 }
 
 .logout_button {
@@ -15,4 +15,16 @@
     cursor: pointer;
     font-size: 16px;
     border-radius: 4px;
+    transition: background-color 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+}
+
+.logout_button:hover {
+    background-color: #4ec0f6;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.logout_button:focus-visible {
+    outline: 2px solid rgba(97, 218, 251, 0.6);
+    outline-offset: 2px;
 }
