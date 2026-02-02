@@ -15,7 +15,8 @@ const Login = ({ scannedCardId }: Props) => {
     useEffect(() => {
         const checkExistingCard = async (id: string) => {
             try {
-                const response = await fetch(`http://localhost:8000/check-card/${id}`);
+                const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
+                const response = await fetch(`${apiUrl}/check-card/${id}`);
                 const data = await response.json();
                 setExistingCardId(data.exists);
                 if (data.exists && data.token) {

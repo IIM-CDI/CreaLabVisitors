@@ -25,7 +25,8 @@ const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: Modi
         try {
             const headers: Record<string,string> = { "Content-Type": "application/json" };
             if (token) headers["Authorization"] = `Bearer ${token}`;
-            await fetch("http://localhost:8000/update-profile", {
+            const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
+            await fetch(`${apiUrl}/update-profile`, {
                 method: "POST",
                 headers,
                 body: JSON.stringify({ prenom: updatedPrenom, nom: updatedNom, email: updatedEmail, card_id }),

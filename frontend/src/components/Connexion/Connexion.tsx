@@ -24,7 +24,8 @@ const Connexion = ({ card_id }: ConnexionProps) => {
         try {
             const headers: Record<string,string> = { "Content-Type": "application/json" };
             if (token) headers["Authorization"] = `Bearer ${token}`;
-            const response = await fetch(`http://localhost:8000/get-profile/${id}`, { headers });
+            const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
+            const response = await fetch(`${apiUrl}/get-profile/${id}`, { headers });
             const data = await response.json();
             if (data?.found) setUserData(data.data);
         } catch (error) {

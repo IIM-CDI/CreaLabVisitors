@@ -22,7 +22,8 @@ const Inscription = ({card_id}: InscriptionInterface) => {
 
         const headers: Record<string,string> = { "Content-Type": "application/json" };
         if (token) headers["Authorization"] = `Bearer ${token}`;
-        fetch("http://localhost:8000/submit", {
+        const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
+        fetch(`${apiUrl}/submit`, {
             method: "POST",
             headers,
             body: JSON.stringify({ prenom, nom, email, card_id }),
