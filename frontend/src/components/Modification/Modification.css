@@ -1,10 +1,9 @@
 .modification_container {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-self: flex-start;
     height: 100%;
-    padding: 20px;
 }
 
 .modification_container h2 {
@@ -12,12 +11,12 @@
     margin-bottom: 16px;
 }
 
+/* Use flex and stack elements vertically */
 .modification_form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 20px;
-    width: 100%;
-    max-width: 800px;
+    align-items: stretch;
 }
 
 .modification_form label {
@@ -34,6 +33,7 @@
     padding: 10px;
     font-size: 1rem;
     margin-top: 8px;
+    box-sizing: border-box;
 }
 
 .modification_form button {
@@ -44,32 +44,11 @@
     background-color: #4cafaf;
     color: white;
     border: none;
-    margin-top: 10px;
-}
+    }
 
-.form_email,
-.form_card_id {
-    grid-column: 1 / -1;
-}
 
 .form_card_id input[disabled],
 .form_card_id input[readonly] {
     background-color: #f5f5f5;
     color: #666;
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-    .modification_form {
-        grid-template-columns: 1fr;
-    }
-
-    .modification_form button {
-        grid-column: auto;
-    }
-
-    .form_email,
-    .form_card_id {
-        grid-column: auto;
-    }
 }

@@ -1,45 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./Login.css";
-import Inscription from "../../components/Inscription/Inscription";
-import Connexion from "../../components/Connexion/Connexion";
-import { useAuth } from '../../context/AuthContext';
 
-type Props = {
-    scannedCardId: string | null;
-};
+// This component is now simplified as the main login logic has been moved to App.tsx
+// It can be used for specific login-related UI if needed in the future
 
-const Login = ({ scannedCardId }: Props) => {
-    const [existingCardId, setExistingCardId] = useState<boolean | null>(null);
-    const { setToken } = useAuth();
-    
-    useEffect(() => {
-        const checkExistingCard = async (id: string) => {
-            try {
-                const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
-                const response = await fetch(`${apiUrl}/check-card/${id}`);
-                const data = await response.json();
-                setExistingCardId(data.exists);
-                if (data.exists && data.token) {
-                    setToken(data.token);
-                }
-            } catch (error) {
-                console.error("Error checking existing card:", error);
-            }
-        }
-        if (scannedCardId) {
-            checkExistingCard(scannedCardId);
-        } else {
-            setExistingCardId(null);
-        }
-    }, [scannedCardId]);
-
+const Login = () => {
     return (
         <div className="Login">
-            {existingCardId === null && <h2>Login Page</h2>}
+            <h2>Login Page</h2>
             <div className="window_container">
-                {existingCardId === null && <p>Please scan your card to proceed.</p>}
-                {existingCardId === false && scannedCardId && <Inscription card_id={scannedCardId} />}
-                {existingCardId === true && scannedCardId && <Connexion card_id={scannedCardId} />}
+                <p>Please scan your card to proceed.</p>
             </div>
         </div>
     );
