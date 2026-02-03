@@ -38,7 +38,7 @@ const Connexion = ({ card_id }: ConnexionProps) => {
     }, [card_id]);
 
     return (
-        <div className="connexion_container">
+        <>
             {userData ? (
                 modificationOpen ? (
                     <Modification
@@ -62,7 +62,7 @@ const Connexion = ({ card_id }: ConnexionProps) => {
             ) : (
                 <p>Chargement des informations...</p>
             )}
-        </div>
+        </>
     );
 };
 

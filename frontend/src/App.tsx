@@ -63,10 +63,7 @@ function AppContent() {
       case 'calendar':
         return (
           <div className="calendar-with-connexion">
-              {scannedCardId && <Connexion card_id={scannedCardId} />}
-            <div className="calendar-section">
-              <Calendar />
-            </div>
+              {scannedCardId && <Calendar card_id={scannedCardId} />}
           </div>
         );
       
