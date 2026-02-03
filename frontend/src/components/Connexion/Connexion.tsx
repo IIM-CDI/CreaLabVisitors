@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from '../../context/AuthContext';
+import React, { useState } from "react";
 import Modification from "../Modification/Modification";
 import "./Connexion.css";
 
 interface ConnexionProps {
     card_id: string;
+    userData: UserData | null;
 }
 
 interface UserData {
@@ -15,28 +15,8 @@ interface UserData {
     [key: string]: string;
 }
 
-const Connexion = ({ card_id }: ConnexionProps) => {
-    const [userData, setUserData] = useState<UserData | null>(null);
+const Connexion = ({ card_id, userData }: ConnexionProps) => {
     const [modificationOpen, setModificationOpen] = useState(false);
-
-    const { token } = useAuth();
-
-    const getProfile = async (id: string) => {
-        try {
-            const headers: Record<string,string> = { "Content-Type": "application/json" };
-            if (token) headers["Authorization"] = `Bearer ${token}`;
-            const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
-            const response = await fetch(`${apiUrl}/get-profile/${id}`, { headers });
-            const data = await response.json();
-            if (data?.found) setUserData(data.data);
-        } catch (error) {
-            console.error("Error fetching profile:", error);
-        }
-    };
-
-    useEffect(() => {
-        if (card_id) getProfile(card_id);
-    }, [card_id]);
 
     return (
         <>
