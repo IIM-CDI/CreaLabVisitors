@@ -57,10 +57,14 @@ const Calendar = ({ card_id }: CalendarEvent) => {
                 draggableInstance = new Draggable(draggableEl, {
                     itemSelector: ".external-event",
                     eventData: (eventEl) => ({
-                        title: eventEl.getAttribute("data-title"),
+                        title: eventEl.getAttribute("data-title") + " - " + eventEl.getAttribute("data-user"),
                         duration: eventEl.getAttribute("data-duration"),
                         backgroundColor: eventEl.getAttribute("data-color"),
                         borderColor: eventEl.getAttribute("data-color"),
+                        extendedProps: {
+                            duration: eventEl.getAttribute("data-duration"),
+                            user: eventEl.getAttribute("data-user")
+                        },
                         id: `dropped-${Date.now()}-${Math.random()}`
                     })
                 });
@@ -88,6 +92,7 @@ const Calendar = ({ card_id }: CalendarEvent) => {
                             data-title={event.title}
                             data-duration={event.duration}
                             data-color={event.color}
+                            data-user={userData ? `${userData.first_name} ${userData.last_name}` : "Inconnu"}
                             style={{
                                 backgroundColor: event.color,
                                 color: 'black',
@@ -99,7 +104,7 @@ const Calendar = ({ card_id }: CalendarEvent) => {
                                 cursor: 'grab'
                             }}
                         >
-                            {event.title}
+                            {event.title }
                         </div>
                     ))}
                 </div>
@@ -135,7 +140,20 @@ const Calendar = ({ card_id }: CalendarEvent) => {
                     }}
                     editable
                     droppable
-                    eventReceive={(info) => console.log('Event received:', info.event.title)}
+                    eventReceive={(info) => {
+                        console.log('Event received:', {
+                            id: info.event.id,
+                            title: info.event.title,
+                            user: info.event.extendedProps?.user,
+                            start: info.event.start,
+                            startStr: info.event.startStr,
+                            end: info.event.end,
+                            endStr: info.event.endStr,
+                            duration: info.event.extendedProps?.duration,
+                            color: info.event.backgroundColor,
+                            user_id: card_id
+                        });
+                    }}
                 />
             </div>
         </>
