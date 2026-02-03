@@ -11,6 +11,7 @@ interface UserData {
     first_name: string;
     last_name: string;
     email: string;
+    role: string;
     [key: string]: string;
 }
 
@@ -45,6 +46,7 @@ const Connexion = ({ card_id }: ConnexionProps) => {
                         prenom={userData.first_name}
                         nom={userData.last_name}
                         email={userData.email}
+                        role={userData.role}
                         card_id={card_id}
                         setModificationOpen={setModificationOpen}
                     />
@@ -54,6 +56,7 @@ const Connexion = ({ card_id }: ConnexionProps) => {
                             Bonjour {userData.first_name} {userData.last_name} !
                         </p>
                         <p>Email: {userData.email}</p>
+                        <p>Role: {userData.role}</p>
                         <button onClick={() => setModificationOpen(true)}>
                             Modifier les informations
                         </button>
