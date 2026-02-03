@@ -1,41 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { useAuth } from '../../context/AuthContext';
+import React, { useState } from "react";
 import Modification from "../Modification/Modification";
 import "./Connexion.css";
 
 interface ConnexionProps {
     card_id: string;
+    userData: UserData | null;
 }
 
 interface UserData {
     first_name: string;
     last_name: string;
     email: string;
+    role: string;
     [key: string]: string;
 }
 
-const Connexion = ({ card_id }: ConnexionProps) => {
-    const [userData, setUserData] = useState<UserData | null>(null);
+const Connexion = ({ card_id, userData }: ConnexionProps) => {
     const [modificationOpen, setModificationOpen] = useState(false);
-
-    const { token } = useAuth();
-
-    const getProfile = async (id: string) => {
-        try {
-            const headers: Record<string,string> = { "Content-Type": "application/json" };
-            if (token) headers["Authorization"] = `Bearer ${token}`;
-            const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
-            const response = await fetch(`${apiUrl}/get-profile/${id}`, { headers });
-            const data = await response.json();
-            if (data?.found) setUserData(data.data);
-        } catch (error) {
-            console.error("Error fetching profile:", error);
-        }
-    };
-
-    useEffect(() => {
-        if (card_id) getProfile(card_id);
-    }, [card_id]);
 
     return (
         <>
@@ -45,6 +26,7 @@ const Connexion = ({ card_id }: ConnexionProps) => {
                         prenom={userData.first_name}
                         nom={userData.last_name}
                         email={userData.email}
+                        role={userData.role}
                         card_id={card_id}
                         setModificationOpen={setModificationOpen}
                     />
@@ -54,6 +36,7 @@ const Connexion = ({ card_id }: ConnexionProps) => {
                             Bonjour {userData.first_name} {userData.last_name} !
                         </p>
                         <p>Email: {userData.email}</p>
+                        <p>Role: {userData.role}</p>
                         <button onClick={() => setModificationOpen(true)}>
                             Modifier les informations
                         </button>

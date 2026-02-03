@@ -6,11 +6,12 @@ interface ModificationProps {
     prenom: string;
     nom: string;
     email: string;
+    role: string;
     card_id: string;
     setModificationOpen?: (open: boolean) => void;
 }
 
-const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: ModificationProps) => {
+const Modification = ({ prenom, nom, email, role, card_id, setModificationOpen }: ModificationProps) => {
     const { token } = useAuth();
 
     const handleSubmit = async (event: React.FormEvent) => {
@@ -21,6 +22,7 @@ const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: Modi
         const updatedPrenom = String(formData.get("prenom") || "");
         const updatedNom = String(formData.get("nom") || "");
         const updatedEmail = String(formData.get("email") || "");
+        const updatedRole = String(formData.get("role") || "");
 
         try {
             const headers: Record<string,string> = { "Content-Type": "application/json" };
@@ -29,7 +31,7 @@ const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: Modi
             await fetch(`${apiUrl}/update-profile`, {
                 method: "POST",
                 headers,
-                body: JSON.stringify({ prenom: updatedPrenom, nom: updatedNom, email: updatedEmail, card_id }),
+                body: JSON.stringify({ prenom: updatedPrenom, nom: updatedNom, email: updatedEmail, card_id, role: updatedRole }),
             });
             formEl.reset();
             if (setModificationOpen) setModificationOpen(false);
@@ -55,6 +57,13 @@ const Modification = ({ prenom, nom, email, card_id, setModificationOpen }: Modi
                 <label className="form_email">
                     Email:
                     <input type="email" name="email" defaultValue={email} required />
+                </label>
+                <label className="form_role">
+                    Role:
+                    <select name="role" >
+                        <option value="etudiant" selected={role === "etudiant"}>Etudiant</option>
+                        <option value="staff" selected={role === "staff"}>Staff</option>
+                    </select>
                 </label>
                 <label className="form_card_id">
                     Card ID:

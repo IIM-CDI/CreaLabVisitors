@@ -1,9 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin, { Draggable } from "@fullcalendar/interaction";
 import frLocale from '@fullcalendar/core/locales/fr';
+import { useAuth } from '../../context/AuthContext';
 import "./Calendar.css";
 import Connexion from "../../components/Connexion/Connexion";
 
@@ -11,15 +12,42 @@ interface CalendarEvent {
     card_id: string;
 }
 
+interface UserData {
+    first_name: string;
+    last_name: string;
+    email: string;
+    role: string;
+    [key: string]: string;
+}
+
 const draggableEvents = [
-    { id: 1, title: "Impression 3D", duration: "00:30", color: "#ff9f89" },
-    { id: 2, title: "Peinture", duration: "02:00", color: "#b8ff89" },
-    { id: 3, title: "Atelier Electronique", duration: "01:00", color: "#89d8ff" },
-    { id: 4, title: "Cours au Crealab", duration:"24:00", color: "#ffef89" },
-    { id: 5, title: "Semaine de cours", duration: "120:00", color: "#d089ff" }
+    { id: 1, title: "Impression 3D", duration: "00:30", color: "#ff9f89", visibility: 'all' },
+    { id: 2, title: "Peinture", duration: "02:00", color: "#b8ff89", visibility: 'all' },
+    { id: 3, title: "Atelier Electronique", duration: "01:00", color: "#89d8ff", visibility: 'all' },
+    { id: 4, title: "Cours au Crealab", duration:"24:00", color: "#ffef89", visibility: 'staff' },
+    { id: 5, title: "Semaine de cours", duration: "120:00", color: "#d089ff", visibility: 'staff' }
 ];
 
 const Calendar = ({ card_id }: CalendarEvent) => {
+    const [userData, setUserData] = useState<UserData | null>(null);
+    const { token } = useAuth();
+
+    const getProfile = async (id: string) => {
+        try {
+            const headers: Record<string,string> = { "Content-Type": "application/json" };
+            if (token) headers["Authorization"] = `Bearer ${token}`;
+            const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
+            const response = await fetch(`${apiUrl}/get-profile/${id}`, { headers });
+            const data = await response.json();
+            if (data?.found) setUserData(data.data);
+        } catch (error) {
+            console.error("Error fetching profile:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (card_id) getProfile(card_id);
+    }, [card_id, token]);
     useEffect(() => {
         let draggableInstance: Draggable | null = null;
 
@@ -48,10 +76,12 @@ const Calendar = ({ card_id }: CalendarEvent) => {
     return (
         <>
             <div className="connexion_container">
-                <Connexion card_id={card_id} />
+                <Connexion card_id={card_id} userData={userData} />
                 <div id="external-events">
                     <p><strong>Draggable Events</strong></p>
-                    {draggableEvents.map((event) => (
+                    {draggableEvents
+                        .filter(event => event.visibility === 'all' || (event.visibility === 'staff' && userData?.role === 'staff'))
+                        .map((event) => (
                         <div
                             key={event.id}
                             className="external-event"

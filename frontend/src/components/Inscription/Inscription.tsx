@@ -30,6 +30,7 @@ const Inscription = ({card_id}: InscriptionInterface) => {
         })
         .then(() => {
             formEl.reset();
+            window.location.reload();
         })
         .catch((error) => {
             console.error("Error submitting profile:", error);
@@ -55,6 +56,13 @@ const Inscription = ({card_id}: InscriptionInterface) => {
                 <label className="form_card_id">
                     Card ID:
                     <input type="text" name="card_id" value={card_id} disabled />
+                </label>
+                <label className="form_role">
+                    Role:
+                    <select name="role" >
+                        <option value="etudiant" selected>Etudiant</option>
+                        <option value="staff">Staff</option>
+                    </select>
                 </label>
                 <button type="submit">Register</button>
             </form>

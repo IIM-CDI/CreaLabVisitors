@@ -45,6 +45,15 @@
     border: none;
     }
 
+.modification_form .form_role select {
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+}
+
 
 .form_card_id input[disabled],
 .form_card_id input[readonly] {

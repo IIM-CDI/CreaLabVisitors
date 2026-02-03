@@ -4,7 +4,6 @@ import threading
 import uvicorn
 import logging
 
-
 logging.basicConfig(level=logging.INFO)
 
 
@@ -17,9 +16,9 @@ def run_card_reader():
         stopbits=1,
         timeout=1
     )
-
+    
     logging.info("Waiting for card scans...")
-
+    
     while True:
         data = ser.read(128)
         if data:
@@ -30,7 +29,7 @@ def run_card_reader():
             except UnicodeDecodeError:
                 card_id = data.hex()
                 logging.debug("Hex card id: %s", card_id)
-
+            
             try:
                 requests.post("http://localhost:8000/getCard", json={"card_id": card_id})
             except Exception:
@@ -40,5 +39,4 @@ def run_card_reader():
 if __name__ == "__main__":
     reader_thread = threading.Thread(target=run_card_reader, daemon=True)
     reader_thread.start()
-
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
