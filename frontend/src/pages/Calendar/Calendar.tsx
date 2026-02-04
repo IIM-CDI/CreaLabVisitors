@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -12,9 +12,18 @@ import { useCalendarApi } from "./hooks/useCalendarApi";
 import { calendarConfig } from "./constants";
 import { CalendarEvent, CalendarEventData } from "./types";
 
-const Calendar = ({ card_id, setIsAdmin }: CalendarEvent) => {
+const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
     const { token } = useAuth();
     const { userData, events, getProfile, fetchEvents, saveEvent } = useCalendarApi(token);
+
+    const handleEventChange = useCallback(() => {
+        fetchEvents();
+    }, [fetchEvents]);
+
+    // Register the refresh function with the parent component
+    useEffect(() => {
+        setRefreshEvents(() => handleEventChange);
+    }, [setRefreshEvents, handleEventChange]);
 
     useEffect(() => {
         if (card_id) getProfile(card_id);
@@ -25,12 +34,7 @@ const Calendar = ({ card_id, setIsAdmin }: CalendarEvent) => {
     }, [token]);
 
     useEffect(() => {
-        if (userData?.admin) {
-            setIsAdmin(true);
-        }
-        else {
-            setIsAdmin(false);
-        }
+        setIsAdmin(!!userData?.admin);
     }, [userData, setIsAdmin]);
 
     const handleEventReceive = (info: any) => {
@@ -60,6 +64,7 @@ const Calendar = ({ card_id, setIsAdmin }: CalendarEvent) => {
             <div className="calendar_container">
                 <h2>Calendar Page</h2>
                 <FullCalendar
+                    key={`calendar-${events.length}-${JSON.stringify(events.map(e => ({id: e.id, color: e.backgroundColor})))}`}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                     locale={frLocale}
                     headerToolbar={calendarConfig.headerToolbar}

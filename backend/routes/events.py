@@ -118,7 +118,7 @@ def accept_event(event_id: str):
             detail=f"Error accepting event: {str(e)}"
         )
         
-@router.delete("/events/{event_id}")
+@router.delete("/delete-event/{event_id}")
 def delete_event(event_id: str):
     """Delete an event by its ID"""
     logging.info("Deleting event with ID: %s", event_id)

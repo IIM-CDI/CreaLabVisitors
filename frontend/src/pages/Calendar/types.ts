@@ -1,6 +1,7 @@
 export interface CalendarEvent {
     card_id: string;
     setIsAdmin: (isAdmin: boolean) => void;
+    setRefreshEvents: (refreshFn: () => void) => void;
 }
 
 export interface UserData {

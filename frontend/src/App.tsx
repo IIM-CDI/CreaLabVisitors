@@ -13,6 +13,7 @@ function AppContent() {
   const [appState, setAppState] = useState<AppState>('login');
   const [existingCardId, setExistingCardId] = useState<boolean | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [refreshEvents, setRefreshEvents] = useState<(() => void) | undefined>(undefined);
   const { setToken } = useAuth();
 
   useEffect(() => {
@@ -63,7 +64,7 @@ function AppContent() {
       case 'calendar':
         return (
           <div className="calendar-with-connexion">
-              {scannedCardId && <Calendar card_id={scannedCardId} setIsAdmin={setIsAdmin} />}
+              {scannedCardId && <Calendar card_id={scannedCardId} setIsAdmin={setIsAdmin} setRefreshEvents={setRefreshEvents} />}
           </div>
         );
       
@@ -80,7 +81,7 @@ function AppContent() {
 
   return (
     <div className="App">
-      <Header setScannedCardId={setScannedCardId} isAdmin={isAdmin} />
+      <Header setScannedCardId={setScannedCardId} isAdmin={isAdmin} onEventChange={refreshEvents} />
       <div className="app-content">
         {renderContent()}
       </div>

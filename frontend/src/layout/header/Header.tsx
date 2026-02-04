@@ -5,9 +5,10 @@ import CustomModal from "../../components/CustomModal/CustomModal";
 interface HeaderInterface {
     setScannedCardId?: (id: string | null) => void;
     isAdmin?: boolean;
+    onEventChange?: () => void;
 }
 
-const Header = ({ setScannedCardId, isAdmin }: HeaderInterface) => {
+const Header = ({ setScannedCardId, isAdmin, onEventChange }: HeaderInterface) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleLogout = () => {
@@ -27,8 +28,8 @@ const Header = ({ setScannedCardId, isAdmin }: HeaderInterface) => {
 
     return (
         <header className="app_header">
-            <CustomModal isOpen={isModalOpen} onClose={closeModal} />
-            {isAdmin !== false && <button className="modal_button" onClick={openModal} > Open Modal </button>}
+            <CustomModal isOpen={isModalOpen} onClose={closeModal} onEventChange={onEventChange} />
+            {isAdmin && <button className="modal_button" onClick={openModal}>Espace Admin - Validation des events</button>}
             <button className="logout_button" onClick={handleLogout}> Déconnexion </button>
         </header>
     );
