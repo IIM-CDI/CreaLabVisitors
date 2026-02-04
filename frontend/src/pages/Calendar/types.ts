@@ -1,5 +1,6 @@
 export interface CalendarEvent {
     card_id: string;
+    setIsAdmin: (isAdmin: boolean) => void;
 }
 
 export interface UserData {

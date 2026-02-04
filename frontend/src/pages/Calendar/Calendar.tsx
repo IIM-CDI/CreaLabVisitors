@@ -12,7 +12,7 @@ import { useCalendarApi } from "./hooks/useCalendarApi";
 import { calendarConfig } from "./constants";
 import { CalendarEvent, CalendarEventData } from "./types";
 
-const Calendar = ({ card_id }: CalendarEvent) => {
+const Calendar = ({ card_id, setIsAdmin }: CalendarEvent) => {
     const { token } = useAuth();
     const { userData, events, getProfile, fetchEvents, saveEvent } = useCalendarApi(token);
 
@@ -23,6 +23,15 @@ const Calendar = ({ card_id }: CalendarEvent) => {
     useEffect(() => {
         fetchEvents();
     }, [token]);
+
+    useEffect(() => {
+        if (userData?.admin) {
+            setIsAdmin(true);
+        }
+        else {
+            setIsAdmin(false);
+        }
+    }, [userData, setIsAdmin]);
 
     const handleEventReceive = (info: any) => {
         const eventData: CalendarEventData = {
