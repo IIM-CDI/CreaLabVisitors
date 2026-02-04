@@ -51,7 +51,8 @@ def submit_data(request: Request, data: ProfilData):
         "first_name": data.prenom,
         "last_name": data.nom,
         "email": data.email,
-        "role": data.role.value
+        "role": data.role.value,
+        "admin": False
     }).execute()
     return {"message": f"Card {data.card_id} received successfully"}
 

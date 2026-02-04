@@ -14,6 +14,7 @@ class EventData(BaseModel):
     duration: str
     color: str
     id_card: str
+    accepted: bool
 
 
 class EventCreateData(BaseModel):
@@ -27,3 +28,4 @@ class EventCreateData(BaseModel):
     duration: str
     color: str
     id_card: str
+    accepted: bool

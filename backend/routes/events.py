@@ -28,7 +28,8 @@ def create_event(event_data: EventCreateData):
             "endStr": event_data.endStr,
             "duration": event_data.duration,
             "color": event_data.color,
-            "id_card": event_data.id_card
+            "id_card": event_data.id_card,
+            "accepted": False
         }).execute()
         
         if result.data:
