@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 from models import CardData, UserRole
 import logging
-import socketio
 import jwt
 from datetime import datetime, timedelta
 
