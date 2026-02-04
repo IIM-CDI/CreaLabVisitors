@@ -38,7 +38,6 @@ export const useCalendarApi = (token: string | null) => {
             
             if (response.ok) {
                 const result = await response.json();
-                console.log('Events fetched successfully:', result);
                 
                 // Transform events to FullCalendar format
                 const formattedEvents: FormattedCalendarEvent[] = result.data.map((event: any) => {

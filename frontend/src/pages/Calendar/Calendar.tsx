@@ -47,8 +47,6 @@ const Calendar = ({ card_id, setIsAdmin }: CalendarEvent) => {
             id_card: card_id,
             accepted: false
         };
-        
-        console.log('Event received:', eventData);
         saveEvent(eventData);
     };
 
