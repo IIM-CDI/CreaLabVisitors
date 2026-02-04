@@ -41,19 +41,25 @@ export const useCalendarApi = (token: string | null) => {
                 console.log('Events fetched successfully:', result);
                 
                 // Transform events to FullCalendar format
-                const formattedEvents: FormattedCalendarEvent[] = result.data.map((event: any) => ({
-                    id: event.id,
-                    title: event.title,
-                    start: event.start,
-                    end: event.end,
-                    backgroundColor: event.color,
-                    borderColor: event.color,
-                    extendedProps: {
-                        user: event.user,
-                        duration: event.duration,
-                        id_card: event.id_card
-                    }
-                }));
+                const formattedEvents: FormattedCalendarEvent[] = result.data.map((event: any) => {
+                    // Use grey for non-accepted events, original color for accepted ones
+                    const displayColor = event.accepted ? event.color : '#808080';
+                    
+                    return {
+                        id: event.id,
+                        title: event.title,
+                        start: event.start,
+                        end: event.end,
+                        backgroundColor: displayColor,
+                        borderColor: displayColor,
+                        extendedProps: {
+                            user: event.user,
+                            duration: event.duration,
+                            id_card: event.id_card,
+                            accepted: event.accepted
+                        }
+                    };
+                });
                 
                 setEvents(formattedEvents);
             } else {

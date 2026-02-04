@@ -35,7 +35,8 @@ const Calendar = ({ card_id }: CalendarEvent) => {
             endStr: info.event.endStr,
             duration: info.event.extendedProps?.duration || '01:00',
             color: info.event.backgroundColor,
-            id_card: card_id
+            id_card: card_id,
+            accepted: false
         };
         
         console.log('Event received:', eventData);

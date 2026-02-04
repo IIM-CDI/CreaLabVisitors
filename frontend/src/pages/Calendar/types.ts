@@ -16,6 +16,7 @@ export interface DraggableEvent {
     duration: string;
     color: string;
     visibility: 'all' | 'staff';
+    accepted: boolean;
 }
 
 export interface CalendarEventData {
@@ -29,6 +30,7 @@ export interface CalendarEventData {
     duration: string;
     color: string;
     id_card: string;
+    accepted: boolean;
 }
 
 export interface FormattedCalendarEvent {
@@ -42,5 +44,6 @@ export interface FormattedCalendarEvent {
         user: string;
         duration: string;
         id_card: string;
+        accepted: boolean;
     };
 }

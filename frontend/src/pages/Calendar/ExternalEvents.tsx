@@ -23,7 +23,8 @@ const ExternalEvents: React.FC<ExternalEventsProps> = ({ userData }) => {
                         borderColor: eventEl.getAttribute("data-color"),
                         extendedProps: {
                             duration: eventEl.getAttribute("data-duration"),
-                            user: eventEl.getAttribute("data-user")
+                            user: eventEl.getAttribute("data-user"),
+                            accepted: eventEl.getAttribute("data-accepted") === 'true'
                         },
                         id: `dropped-${Date.now()}-${Math.random()}`
                     })
@@ -41,29 +42,30 @@ const ExternalEvents: React.FC<ExternalEventsProps> = ({ userData }) => {
         <div id="external-events">
             <p><strong>Draggable Events</strong></p>
             {draggableEvents
-                .filter(event => event.visibility === 'all' || (event.visibility === 'staff' && userData?.role === 'staff'))
-                .map((event) => (
-                    <div
-                        key={event.id}
-                        className="external-event"
-                        data-title={event.title}
-                        data-duration={event.duration}
-                        data-color={event.color}
-                        data-user={userData ? `${userData.first_name} ${userData.last_name}` : "Inconnu"}
-                        style={{
-                            backgroundColor: event.color,
-                            color: 'black',
-                            fontWeight: '500',
-                            borderRadius: '5px',
-                            border: 'none',
-                            marginBottom: '10px',
-                            padding: '4px',
-                            cursor: 'grab'
-                        }}
-                    >
-                        {event.title}
-                    </div>
-                ))
+            .filter(event => event.visibility === 'all' || (event.visibility === 'staff' && userData?.role === 'staff'))
+            .map((event) => (
+                <div
+                key={event.id}
+                className="external-event"
+                data-title={event.title}
+                data-duration={event.duration}
+                data-color={event.color}
+                data-user={userData ? `${userData.first_name} ${userData.last_name}` : "Inconnu"}
+                data-accepted={event.accepted ? 'true' : 'false'}
+                style={{
+                    backgroundColor: event.color,
+                    color: 'black',
+                    fontWeight: '500',
+                    borderRadius: '5px',
+                    border: 'none',
+                    marginBottom: '10px',
+                    padding: '4px',
+                    cursor: 'grab'
+                }}
+                >
+                {event.title}
+                </div>
+            ))
             }
         </div>
     );
