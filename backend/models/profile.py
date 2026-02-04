@@ -7,4 +7,5 @@ class ProfilData(BaseModel):
     prenom: str
     nom: str
     email: str
-    role: UserRole = UserRole.ETUDIANT
+    role: UserRole
+    admin: bool

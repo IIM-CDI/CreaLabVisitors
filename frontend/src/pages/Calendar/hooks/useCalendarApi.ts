@@ -1,59 +1,62 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { UserData, CalendarEventData, FormattedCalendarEvent } from '../types';
 
 export const useCalendarApi = (token: string | null) => {
     const [userData, setUserData] = useState<UserData | null>(null);
     const [events, setEvents] = useState<FormattedCalendarEvent[]>([]);
 
-    const getApiUrl = () => {
-        return process.env.REACT_APP_ENV === 'PROD' 
-            ? process.env.REACT_APP_PROD_API_URL 
-            : process.env.REACT_APP_DEV_API_URL;
-    };
-
-    const getHeaders = () => {
-        const headers: Record<string, string> = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
-        return headers;
-    };
-
-    const getProfile = async (id: string) => {
+    const getProfile = useCallback(async (id: string) => {
         try {
-            const response = await fetch(`${getApiUrl()}/get-profile/${id}`, { 
-                headers: getHeaders() 
+            const apiUrl = process.env.REACT_APP_ENV === 'PROD' 
+                ? process.env.REACT_APP_PROD_API_URL 
+                : process.env.REACT_APP_DEV_API_URL;
+            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            if (token) headers["Authorization"] = `Bearer ${token}`;
+            
+            const response = await fetch(`${apiUrl}/get-profile/${id}`, { 
+                headers 
             });
             const data = await response.json();
             if (data?.found) setUserData(data.data);
         } catch (error) {
             console.error("Error fetching profile:", error);
         }
-    };
+    }, [token]);
 
-    const fetchEvents = async () => {
+    const fetchEvents = useCallback(async () => {
         try {
-            const response = await fetch(`${getApiUrl()}/events`, {
+            const apiUrl = process.env.REACT_APP_ENV === 'PROD' 
+                ? process.env.REACT_APP_PROD_API_URL 
+                : process.env.REACT_APP_DEV_API_URL;
+            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            if (token) headers["Authorization"] = `Bearer ${token}`;
+            
+            const response = await fetch(`${apiUrl}/events`, {
                 method: 'GET',
-                headers: getHeaders()
+                headers
             });
             
             if (response.ok) {
                 const result = await response.json();
-                console.log('Events fetched successfully:', result);
                 
-                // Transform events to FullCalendar format
-                const formattedEvents: FormattedCalendarEvent[] = result.data.map((event: any) => ({
-                    id: event.id,
-                    title: event.title,
-                    start: event.start,
-                    end: event.end,
-                    backgroundColor: event.color,
-                    borderColor: event.color,
-                    extendedProps: {
-                        user: event.user,
-                        duration: event.duration,
-                        id_card: event.id_card
-                    }
-                }));
+                const formattedEvents: FormattedCalendarEvent[] = result.data.map((event: any) => {
+                    const displayColor = event.accepted ? event.color : '#808080';
+                    
+                    return {
+                        id: event.id,
+                        title: event.title,
+                        start: event.start,
+                        end: event.end,
+                        backgroundColor: displayColor,
+                        borderColor: displayColor,
+                        extendedProps: {
+                            user: event.user,
+                            duration: event.duration,
+                            id_card: event.id_card,
+                            accepted: event.accepted
+                        }
+                    };
+                });
                 
                 setEvents(formattedEvents);
             } else {
@@ -62,20 +65,23 @@ export const useCalendarApi = (token: string | null) => {
         } catch (error) {
             console.error("Error fetching events:", error);
         }
-    };
+    }, [token]);
 
-    const saveEvent = async (eventData: CalendarEventData) => {
+    const saveEvent = useCallback(async (eventData: CalendarEventData) => {
         try {
-            const response = await fetch(`${getApiUrl()}/events`, {
+            const apiUrl = process.env.REACT_APP_ENV === 'PROD' 
+                ? process.env.REACT_APP_PROD_API_URL 
+                : process.env.REACT_APP_DEV_API_URL;
+            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            if (token) headers["Authorization"] = `Bearer ${token}`;
+            
+            const response = await fetch(`${apiUrl}/events`, {
                 method: 'POST',
-                headers: getHeaders(),
+                headers,
                 body: JSON.stringify(eventData)
             });
             
             if (response.ok) {
-                const result = await response.json();
-                console.log('Event saved successfully:', result);
-                // Refetch events to update the calendar
                 fetchEvents();
             } else {
                 console.error('Failed to save event:', response.statusText);
@@ -83,7 +89,7 @@ export const useCalendarApi = (token: string | null) => {
         } catch (error) {
             console.error("Error saving event:", error);
         }
-    };
+    }, [token, fetchEvents]);
 
     return {
         userData,
