@@ -2,7 +2,7 @@ import smtplib
 import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from jinja2 import Template
+from jinja2 import Template, Environment, FileSystemLoader
 from typing import Optional, Dict, Any
 import os
 import logging
@@ -25,6 +25,10 @@ class EmailService:
         self.from_email = os.getenv("SMTP_FROM_EMAIL", self.smtp_username)
         self.from_name = os.getenv("SMTP_FROM_NAME", "CreaLab")
         
+        # Setup templates directory and Jinja2 environment
+        self.templates_dir = os.path.join(os.path.dirname(__file__), '..', 'templates')
+        self.jinja_env = Environment(loader=FileSystemLoader(self.templates_dir))
+        
         if not all([self.smtp_username, self.smtp_password]):
             logger.warning("Email credentials not configured. Email service will be disabled.")
     
@@ -45,6 +49,15 @@ class EmailService:
         message.attach(html_part)
         
         return message
+    
+    def _load_template(self, template_name: str) -> Template:
+        """Load HTML template from templates directory"""
+        try:
+            template = self.jinja_env.get_template(template_name)
+            return template
+        except Exception as e:
+            logger.error(f"Failed to load template {template_name}: {str(e)}")
+            raise
     
     def send_email(self, to_email: str, subject: str, html_content: str, text_content: Optional[str] = None) -> bool:
         """Send email using Gmail SSL (Port 465)"""
@@ -72,58 +85,8 @@ class EmailService:
         """Send event approval email to admin"""
         admin_email = os.getenv("ADMIN_EMAIL", "admin@crealab.com")
         
-        html_template = Template("""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: #4CAF50; color: white; padding: 20px; text-align: center; }
-                .content { background: #f9f9f9; padding: 20px; }
-                .event-details { background: white; padding: 15px; margin: 15px 0; border-left: 4px solid #4CAF50; }
-                .actions { text-align: center; margin: 30px 0; }
-                .btn { display: inline-block; padding: 12px 30px; margin: 0 10px; text-decoration: none; border-radius: 5px; font-weight: bold; }
-                .btn-approve { background: #4CAF50; color: white; }
-                .btn-reject { background: #f44336; color: white; }
-                .footer { text-align: center; color: #666; font-size: 12px; margin-top: 30px; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>📅 New Event Approval Required</h1>
-                </div>
-                
-                <div class="content">
-                    <p>Hello Admin,</p>
-                    <p>A new event has been submitted and requires your approval:</p>
-                    
-                    <div class="event-details">
-                        <h3>{{ event_title }}</h3>
-                        <p><strong>User:</strong> {{ event_user }}</p>
-                        <p><strong>Start:</strong> {{ event_start }}</p>
-                        <p><strong>End:</strong> {{ event_end }}</p>
-                        <p><strong>Duration:</strong> {{ event_duration }}</p>
-                    </div>
-                    
-                    <div class="actions">
-                        <a href="{{ approve_url }}" class="btn btn-approve">✅ Approve Event</a>
-                        <a href="{{ reject_url }}" class="btn btn-reject">❌ Reject Event</a>
-                    </div>
-                    
-                    <p><small>These links will expire in 7 days. You can also manage events through the admin dashboard.</small></p>
-                </div>
-                
-                <div class="footer">
-                    <p>CreaLab Event Management System</p>
-                    <p>This is an automated message, please do not reply.</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        """)
+        # Load template from external file
+        html_template = self._load_template('event_approval.html')
         
         text_content = f"""
         New Event Approval Required
@@ -150,7 +113,7 @@ class EmailService:
             reject_url=reject_url
         )
         
-        subject = f"🔔 New Event Approval Required: {event_data.get('title', 'Event')}"
+        subject = f"Nouvel Event: {event_data.get('title', 'Event')}"
         
         return self.send_email(admin_email, subject, html_content, text_content)
 
