@@ -181,7 +181,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, onEventChang
                 </div>
                 <div className="modal-body">
                     {unacceptedEvents.length === 0 ? (
-                        <p>No unaccepted events.</p>
+                        <p>Aucun événement en attente de validation.</p>
                     ) : (
                         <ul>
                             {unacceptedEvents.map((event) => (

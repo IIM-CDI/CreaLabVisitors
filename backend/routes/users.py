@@ -29,18 +29,18 @@ def submit_data(request: Request, data: ProfileData):
             token = auth.split()[1]
             decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             if decoded.get("card_id") != data.card_id:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token card mismatch")
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Carte et token ne correspondent pas")
         except Exception:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide")
     else:
         origin = request.headers.get("origin") or request.client.host
         if FRONTEND_URL and FRONTEND_URL not in origin and origin != "http://localhost":
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origin not allowed")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
         if latest_card.get("id") != data.card_id:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Card not recently scanned")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Carte non récemment scannée")
         ts = latest_card.get("ts")
         if not ts or (datetime.utcnow() - ts).total_seconds() > 120:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Card scan expired")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Scan de carte expiré")
 
     latest_card["id"] = data.card_id
     latest_card["ts"] = None
@@ -52,7 +52,7 @@ def submit_data(request: Request, data: ProfileData):
         "role": data.role.value,
         "admin": False
     }).execute()
-    return {"message": f"Card {data.card_id} received successfully"}
+    return {"message": f"Carte {data.card_id} reçue avec succès"}
 
 
 @router.post("/update-profile")
@@ -60,14 +60,14 @@ def update_profile(request: Request, data: ProfileData):
     logging.info("Updating profile for card: %s", data.card_id)
     auth = request.headers.get("authorization")
     if not auth:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing authorization token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token d'autorisation manquant")
     try:
         token = auth.split()[1]
         decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         if decoded.get("card_id") != data.card_id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token card mismatch")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Carte et token ne correspondent pas")
     except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide")
 
     supabase.table("CreaLab_visitors").update({
         "first_name": data.first_name,
@@ -75,21 +75,21 @@ def update_profile(request: Request, data: ProfileData):
         "email": data.email,
         "role": data.role.value
     }).eq("id_card", data.card_id).execute()
-    return {"message": f"Profile for card {data.card_id} updated successfully"}
+    return {"message": f"Profil pour la carte {data.card_id} mis à jour avec succès"}
 
 
 @router.get("/get-profile/{card_id}")
 def get_profile(request: Request, card_id: str):
     auth = request.headers.get("authorization")
     if not auth:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing authorization token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token d'autorisation manquant")
     try:
         token = auth.split()[1]
         decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         if decoded.get("card_id") != card_id:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token card mismatch")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Carte et token ne correspondent pas")
     except Exception:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide")
 
     result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
     if len(result.data) > 0:

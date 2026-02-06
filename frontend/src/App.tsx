@@ -53,8 +53,8 @@ function AppContent() {
       case 'waiting':
         return (
           <div className="waiting-container">
-            <h2>Processing Card...</h2>
-            <p>Please wait while we check your card...</p>
+            <h2>Traitement de la carte...</h2>
+            <p>Veuillez patienter pendant que nous vérifions votre carte...</p>
           </div>
         );
       
@@ -72,8 +72,8 @@ function AppContent() {
       default:
         return (
           <div className="login-container">
-            <h2>Welcome to CreaLab</h2>
-            <p>Please scan your card to proceed.</p>
+            <h2>Bienvenue au CreaLab</h2>
+            <p>Veuillez scanner votre carte pour continuer.</p>
           </div>
         );
     }

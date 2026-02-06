@@ -102,7 +102,7 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
             </div>
 
             <div className="calendar_container">
-                <h2>Calendar Page</h2>
+                <h2>Calendrier des Réservations</h2>
                 <FullCalendar
                     key={`calendar-${events.length}-${JSON.stringify(events.map(e => ({id: e.id, color: e.backgroundColor})))}`}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

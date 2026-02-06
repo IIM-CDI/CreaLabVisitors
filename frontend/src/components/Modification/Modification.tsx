@@ -47,26 +47,26 @@ const Modification = ({ prenom, nom, email, role, card_id, setModificationOpen }
             <h2>Modification des informations</h2>
             <form className="modification_form" onSubmit={handleSubmit}>
                 <label className="form_prenom">
-                    Prénom:
+                    Prénom :
                     <input type="text" name="prenom" defaultValue={prenom} required minLength={1} />
                 </label>
                 <label className="form_nom">
-                    Nom:
+                    Nom :
                     <input type="text" name="nom" defaultValue={nom} required minLength={1} />
                 </label>
                 <label className="form_email">
-                    Email:
+                    Email :
                     <input type="email" name="email" defaultValue={email} required />
                 </label>
                 <label className="form_role">
-                    Role:
+                    Rôle :
                     <select name="role" >
                         <option value="etudiant" selected={role === "etudiant"}>Etudiant</option>
                         <option value="staff" selected={role === "staff"}>Staff</option>
                     </select>
                 </label>
                 <label className="form_card_id">
-                    Card ID:
+                    ID Carte :
                     <input type="text" name="card_id" value={card_id} readOnly />
                 </label>
                 <button type="button" onClick={() => setModificationOpen && setModificationOpen(false)}>

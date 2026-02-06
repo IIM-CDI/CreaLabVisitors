@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -131,34 +131,34 @@
 <body>
     <div class="email-container">
         <div class="header">
-            <h1>Event Approval Required</h1>
+            <h1>Approbation d'Événement Requise</h1>
         </div>
         
         <div class="content">
-            <p>Dear Administrator,</p>
-            <p>A new event has been submitted for approval. Please review the event details and approve or reject as appropriate.</p>
+            <p>Cher Administrateur,</p>
+            <p>Un nouvel événement a été soumis pour approbation. Veuillez examiner les détails de l'événement et approuver ou rejeter selon convenance.</p>
             
             <div class="event-info">
                 <h2>{{ event_title }}</h2>
-                <p><strong>Submitted by:</strong> {{ event_user }}</p>
-                <p><strong>Start:</strong> {{ event_start }}</p>
-                <p><strong>End:</strong> {{ event_end }}</p>
-                <p><strong>Duration:</strong> {{ event_duration }}</p>
+                <p><strong>Soumis par :</strong> {{ event_user }}</p>
+                <p><strong>Début :</strong> {{ event_start }}</p>
+                <p><strong>Fin :</strong> {{ event_end }}</p>
+                <p><strong>Durée :</strong> {{ event_duration }}</p>
             </div>
             
             <div class="action-buttons">
-                <a href="{{ approve_url }}" class="btn-approve">Approve Event</a>
-                <a href="{{ reject_url }}" class="btn-reject">Reject Event</a>
+                <a href="{{ approve_url }}" class="btn-approve">Approuver l'Événement</a>
+                <a href="{{ reject_url }}" class="btn-reject">Rejeter l'Événement</a>
             </div>
             
             <div class="info-note">
-                Note: These approval links will expire in 7 days. Events can also be managed through the administration panel.
+                Note : Ces liens d'approbation expireront dans 7 jours. Les événements peuvent également être gérés via le panneau d'administration.
             </div>
         </div>
         
         <div class="footer">
-            <p><strong>CreaLab Event Management</strong></p>
-            <p>This is an automated notification. Please do not reply to this email.</p>
+            <p><strong>Gestion des Événements CreaLab</strong></p>
+            <p>Ceci est une notification automatisée. Veuillez ne pas répondre à cet email.</p>
         </div>
     </div>
 </body>

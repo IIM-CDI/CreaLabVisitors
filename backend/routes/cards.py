@@ -38,7 +38,7 @@ async def get_card(card_data: CardScan):
         await sio.emit("card_scanned", card_data.card_id)
     except Exception:
         logging.exception("Failed to emit socket event for scanned card")
-    return {"message": f"Card {card_data.card_id} received successfully"}
+    return {"message": f"Carte {card_data.card_id} reçue avec succès"}
 
 
 @router.get("/check-card/{card_id}")

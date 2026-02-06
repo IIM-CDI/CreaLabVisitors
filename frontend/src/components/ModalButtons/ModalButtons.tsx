@@ -15,14 +15,14 @@ const ModalButtons = ({onValidate, onDelete, isLoading = false}: ModalButtonsPro
                 onClick={onValidate}
                 disabled={isLoading}
             >
-                {isLoading ? "Processing..." : "✓ Validate"}
+                {isLoading ? "Traitement..." : "✓ Valider"}
             </button>
             <button 
                 className="delete-button"
                 onClick={onDelete}
                 disabled={isLoading}
             >
-                {isLoading ? "Processing..." : "✗ Delete"}
+                {isLoading ? "Traitement..." : "✗ Supprimer"}
             </button>
         </div>
     );

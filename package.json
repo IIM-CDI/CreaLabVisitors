@@ -1,7 +1,7 @@
 {
   "name": "crealabvisitors",
   "version": "1.0.0",
-  "description": "A small visitor management app for the CreaLab space. Tracks visits, stores basic metadata, and provides a simple UI/API to review visitor logs.",
+  "description": "Une petite application de gestion des visiteurs pour l'espace CreaLab. Suit les visites, stocke les métadonnées de base et fournit une interface/API simple pour consulter les journaux des visiteurs.",
   "homepage": "https://github.com/IIM-CDI/CreaLabVisitors#readme",
   "bugs": {
     "url": "https://github.com/IIM-CDI/CreaLabVisitors/issues"
