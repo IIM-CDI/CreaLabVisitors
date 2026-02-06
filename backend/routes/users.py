@@ -23,7 +23,6 @@ def init_user_routes(db, card_data, secret, frontend_url):
 @router.post("/submit")
 def submit_data(request: Request, data: ProfileData):
     logging.info("Submitting profile for card: %s", data.card_id)
-    # If Authorization header with valid token is present, accept.
     auth = request.headers.get("authorization")
     if auth:
         try:
@@ -34,7 +33,6 @@ def submit_data(request: Request, data: ProfileData):
         except Exception:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     else:
-        # No token: allow only if the card was very recently scanned by the kiosk frontend
         origin = request.headers.get("origin") or request.client.host
         if FRONTEND_URL and FRONTEND_URL not in origin and origin != "http://localhost":
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origin not allowed")

@@ -37,7 +37,7 @@ sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[FRONTEND_URL
 
 init_card_routes(supabase, latest_card, sio, SECRET_KEY, TOKEN_EXPIRE_SECONDS, FRONTEND_URL)
 init_user_routes(supabase, latest_card, SECRET_KEY, FRONTEND_URL)
-init_event_routes(supabase)
+init_event_routes(supabase, sio, SECRET_KEY, FRONTEND_URL)
 
 fastapi_app.include_router(health_router)
 fastapi_app.include_router(cards_router)

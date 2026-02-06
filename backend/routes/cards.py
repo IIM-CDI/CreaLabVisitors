@@ -46,9 +46,7 @@ def check_existing_card(card_id: str):
     result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
     exists = len(result.data) > 0
     if exists:
-        # get user role
         user_role = result.data[0].get("role", UserRole.ETUDIANT.value)
-        # create a short-lived JWT for this card
         payload = {
             "card_id": card_id,
             "role": user_role,

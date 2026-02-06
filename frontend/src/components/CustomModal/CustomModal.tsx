@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import "./CustomModal.css";
 import { useAuth } from '../../context/AuthContext';
 import ModalButtons from "../ModalButtons/ModalButtons";
+import { io, Socket } from "socket.io-client";
 
 interface CustomModalProps {
     isOpen: boolean;
@@ -85,6 +86,55 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, onEventChang
         if (isOpen) {
             fetchUnacceptedEvents();
         }
+    }, [isOpen, token]);
+
+    // Socket connection for real-time event updates
+    useEffect(() => {
+        let socket: Socket | null = null;
+        
+        if (isOpen) {
+            const apiUrl = getApiUrl();
+            socket = io(apiUrl || "http://localhost:8000", { 
+                transports: ["websocket"] 
+            });
+
+            socket.on("connect", () => {
+                console.log("Modal socket connected", socket?.id);
+            });
+
+            socket.on("events_updated", (data: { action: string; event?: any; event_id?: string }) => {
+                console.log(`Modal - Event ${data.action}:`, data);
+                // Refresh the unaccepted events list
+                const fetchUnacceptedEvents = async () => {
+                    try {
+                        const response = await fetch(`${getApiUrl()}/unaccepted-events`, {
+                            method: 'GET',
+                            headers: getHeaders()
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            setUnacceptedEvents(data.data || []);
+                        } else {
+                            console.error('Failed to fetch unaccepted events:', response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching unaccepted events:', error);
+                    }
+                };
+                fetchUnacceptedEvents();
+            });
+
+            socket.on("disconnect", () => {
+                console.log("Modal socket disconnected");
+            });
+        }
+
+        return () => {
+            if (socket) {
+                socket.disconnect();
+            }
+        };
     }, [isOpen, token]);
 
     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {

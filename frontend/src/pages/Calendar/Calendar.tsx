@@ -5,6 +5,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import frLocale from '@fullcalendar/core/locales/fr';
 import { useAuth } from '../../context/AuthContext';
+import { io, Socket } from "socket.io-client";
 import "./Calendar.css";
 import Connexion from "../../components/Connexion/Connexion";
 import ExternalEvents from "./ExternalEvents";
@@ -36,6 +37,45 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
     useEffect(() => {
         setIsAdmin(!!userData?.admin);
     }, [userData, setIsAdmin]);
+
+    // Socket connection for real-time event updates
+    useEffect(() => {
+        let socket: Socket | null = null;
+        
+        const initSocket = () => {
+            const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? 
+                process.env.REACT_APP_PROD_API_URL : 
+                process.env.REACT_APP_DEV_API_URL;
+            
+            socket = io(apiUrl || "http://localhost:8000", { 
+                transports: ["websocket"] 
+            });
+
+            socket.on("connect", () => {
+                console.log("Calendar socket connected", socket?.id);
+            });
+
+            socket.on("events_updated", (data: { action: string; event?: any; event_id?: string }) => {
+                console.log(`Event ${data.action}:`, data);
+                // Refresh the calendar when any event is updated
+                fetchEvents();
+            });
+
+            socket.on("disconnect", () => {
+                console.log("Calendar socket disconnected");
+            });
+        };
+
+        if (token) {
+            initSocket();
+        }
+
+        return () => {
+            if (socket) {
+                socket.disconnect();
+            }
+        };
+    }, [token, fetchEvents]);
 
     const handleEventReceive = (info: any) => {
         const eventData: CalendarEventData = {
