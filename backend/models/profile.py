@@ -2,10 +2,11 @@ from pydantic import BaseModel
 from .user import UserRole
 
 
-class ProfilData(BaseModel):
+class ProfileData(BaseModel):
+    """User profile data"""
     card_id: str
-    prenom: str
-    nom: str
-    email: str
+    first_name: str
+    last_name: str  
+    email: str  # Using regular str for now, can add EmailStr later when email-validator is installed
     role: UserRole
-    admin: bool
+    admin: bool = False

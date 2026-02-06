@@ -7,3 +7,4 @@ python-dotenv
 python-socketio[asgi]
 PyJWT
 jinja2
+email-validator

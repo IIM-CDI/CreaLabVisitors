@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import RedirectResponse
-from models import EventCreateData
+from models import EventCreate
 from services.email_service import email_service
 import jwt
 from datetime import datetime, timedelta
@@ -59,7 +59,7 @@ def send_approval_email(event_data: dict) -> bool:
 
 
 @router.post("/events")
-def create_event(event_data: EventCreateData):
+def create_event(event_data: EventCreate):
     """Create a new event and send approval email to admin"""
     logging.info("Creating event: %s", event_data.title)
     

@@ -1,4 +1,6 @@
 from .user import UserRole
-from .card import CardData
-from .profile import ProfilData
-from .event import EventData, EventCreateData
+from .card import CardScan
+from .profile import ProfileData
+from .event import Event, EventCreate
+
+__all__ = ["UserRole", "CardScan", "ProfileData", "Event", "EventCreate"]

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
 
-class CardData(BaseModel):
+class CardScan(BaseModel):
+    """Card scan data from reader"""
     card_id: str

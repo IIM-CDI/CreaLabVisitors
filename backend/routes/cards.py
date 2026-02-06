@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from models import CardData, UserRole
+from models import CardScan, UserRole
 import logging
 import jwt
 from datetime import datetime, timedelta
@@ -30,7 +30,7 @@ def get_latest_card():
 
 
 @router.post("/getCard")
-async def get_card(card_data: CardData):
+async def get_card(card_data: CardScan):
     logging.info("Card scanned: %s", card_data.card_id)
     latest_card["id"] = card_data.card_id
     latest_card["ts"] = datetime.utcnow()
