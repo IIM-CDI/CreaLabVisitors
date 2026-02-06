@@ -2,10 +2,10 @@ from pydantic import BaseModel
 from .user import UserRole
 
 
-class ProfilData(BaseModel):
+class ProfileData(BaseModel):
     card_id: str
-    prenom: str
-    nom: str
+    first_name: str
+    last_name: str
     email: str
     role: UserRole
-    admin: bool
+    admin: bool = False

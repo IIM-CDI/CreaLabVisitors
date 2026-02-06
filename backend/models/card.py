@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 
-class CardData(BaseModel):
+class CardScan(BaseModel):
     card_id: str

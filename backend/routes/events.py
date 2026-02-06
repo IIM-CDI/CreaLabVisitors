@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import RedirectResponse
-from models import EventCreateData
+from models import EventCreate
 from services.email_service import email_service
 import jwt
 from datetime import datetime, timedelta
@@ -10,19 +10,20 @@ import os
 router = APIRouter()
 
 supabase = None
+sio = None
 EMAIL_TOKEN_SECRET = None
 FRONTEND_URL = None
 BACKEND_URL = None
 
-def init_event_routes(db, secret_key=None, frontend_url=None):
-    global supabase, EMAIL_TOKEN_SECRET, FRONTEND_URL, BACKEND_URL
+def init_event_routes(db, socket_io=None, secret_key=None, frontend_url=None):
+    global supabase, sio, EMAIL_TOKEN_SECRET, FRONTEND_URL, BACKEND_URL
     supabase = db
+    sio = socket_io
     EMAIL_TOKEN_SECRET = secret_key + "_email_salt" if secret_key else os.getenv("SECRET_KEY", "change_this_secret") + "_email_salt"
     FRONTEND_URL = frontend_url or os.getenv("FRONTEND_URL")
     BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 def generate_email_token(event_id: str, action: str, admin_email: str = "admin@crealab.com", expires_days: int = 7) -> str:
-    """Generate secure token for email actions"""
     payload = {
         "event_id": event_id,
         "action": action,
@@ -33,7 +34,6 @@ def generate_email_token(event_id: str, action: str, admin_email: str = "admin@c
     return jwt.encode(payload, EMAIL_TOKEN_SECRET, algorithm="HS256")
 
 def validate_email_token(token: str, expected_action: str, expected_event_id: str) -> dict:
-    """Validate email token"""
     try:
         payload = jwt.decode(token, EMAIL_TOKEN_SECRET, algorithms=["HS256"])
         if payload.get("action") != expected_action or payload.get("event_id") != expected_event_id:
@@ -43,7 +43,6 @@ def validate_email_token(token: str, expected_action: str, expected_event_id: st
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token")
 
 def send_approval_email(event_data: dict) -> bool:
-    """Send approval email for new events"""
     try:
         admin_email = os.getenv("ADMIN_EMAIL", "admin@crealab.com")
         approve_token = generate_email_token(event_data["id"], "approve", admin_email)
@@ -59,12 +58,10 @@ def send_approval_email(event_data: dict) -> bool:
 
 
 @router.post("/events")
-def create_event(event_data: EventCreateData):
-    """Create a new event and send approval email to admin"""
+async def create_event(event_data: EventCreate):
     logging.info("Creating event: %s", event_data.title)
     
     try:
-        # Insert event into database
         result = supabase.table("CreaLab_events").insert({
             "id": event_data.id,
             "title": event_data.title,
@@ -80,12 +77,17 @@ def create_event(event_data: EventCreateData):
         }).execute()
         
         if result.data:
-            # Send approval email
             try:
                 email_sent = send_approval_email(result.data[0])
                 logging.info(f"Approval email sent: {email_sent}")
             except Exception as email_error:
                 logging.warning(f"Failed to send approval email: {str(email_error)}")
+            
+            try:
+                if sio:
+                    await sio.emit("events_updated", {"action": "created", "event": result.data[0]})
+            except Exception as socket_error:
+                logging.warning(f"Failed to emit socket event: {str(socket_error)}")
             
             return {"message": "Event created successfully", "data": result.data[0]}
         else:
@@ -104,11 +106,9 @@ def create_event(event_data: EventCreateData):
 
 @router.get("/events")
 def get_all_events():
-    """Retrieve all events from the database"""
     logging.info("Retrieving all events")
     
     try:
-        # Get all events from database
         result = supabase.table("CreaLab_events").select("*").execute()
         
         return {
@@ -126,11 +126,9 @@ def get_all_events():
         
 @router.get("/unaccepted-events")
 def get_unaccepted_events():
-    """Retrieve all unaccepted events from the database"""
     logging.info("Retrieving unaccepted events")
     
     try:
-        # Get unaccepted events from database
         result = supabase.table("CreaLab_events").select("*").eq("accepted", False).execute()
         
         return {
@@ -147,14 +145,12 @@ def get_unaccepted_events():
         )
         
 @router.get("/events/{event_id}/approve")
-def approve_event_via_email(event_id: str, token: str):
-    """Approve event via email link"""
+async def approve_event_via_email(event_id: str, token: str):
     logging.info("Approving event via email with ID: %s", event_id)
     
     try:
         validate_email_token(token, "approve", event_id)
         
-        # Check and update event
         event_check = supabase.table("CreaLab_events").select("*").eq("id", event_id).execute()
         if not event_check.data:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Event {event_id} not found")
@@ -164,6 +160,12 @@ def approve_event_via_email(event_id: str, token: str):
         else:
             supabase.table("CreaLab_events").update({"accepted": True}).eq("id", event_id).execute()
             message = "Event approved successfully"
+            
+            try:
+                if sio:
+                    await sio.emit("events_updated", {"action": "approved", "event_id": event_id})
+            except Exception as socket_error:
+                logging.warning(f"Failed to emit socket event: {str(socket_error)}")
         
         if FRONTEND_URL:
             return RedirectResponse(url=f"{FRONTEND_URL}?message={message}&status=success")
@@ -176,16 +178,20 @@ def approve_event_via_email(event_id: str, token: str):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 @router.get("/events/{event_id}/reject")
-def reject_event_via_email(event_id: str, token: str):
-    """Reject event via email link"""
+async def reject_event_via_email(event_id: str, token: str):
     logging.info("Rejecting event via email with ID: %s", event_id)
     
     try:
         validate_email_token(token, "reject", event_id)
         
-        # Delete event
         result = supabase.table("CreaLab_events").delete().eq("id", event_id).execute()
         message = "Event rejected and deleted successfully"
+        
+        try:
+            if sio:
+                await sio.emit("events_updated", {"action": "rejected", "event_id": event_id})
+        except Exception as socket_error:
+            logging.warning(f"Failed to emit socket event: {str(socket_error)}")
         
         if FRONTEND_URL:
             return RedirectResponse(url=f"{FRONTEND_URL}?message={message}&status=success")
@@ -198,17 +204,21 @@ def reject_event_via_email(event_id: str, token: str):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 @router.post("/accept-event/{event_id}")
-def accept_event(event_id: str):
-    """Accept an event by its ID"""
+async def accept_event(event_id: str):
     logging.info("Accepting event with ID: %s", event_id)
     
     try:
-        # Update event to accepted in database
         result = supabase.table("CreaLab_events").update({
             "accepted": True
         }).eq("id", event_id).execute()
         
         if result.data:
+            try:
+                if sio:
+                    await sio.emit("events_updated", {"action": "accepted", "event_id": event_id})
+            except Exception as socket_error:
+                logging.warning(f"Failed to emit socket event: {str(socket_error)}")
+            
             return {"message": f"Event {event_id} accepted successfully", "data": result.data[0]}
         else:
             raise HTTPException(
@@ -224,15 +234,19 @@ def accept_event(event_id: str):
         )
         
 @router.delete("/delete-event/{event_id}")
-def delete_event(event_id: str):
-    """Delete an event by its ID"""
+async def delete_event(event_id: str):
     logging.info("Deleting event with ID: %s", event_id)
     
     try:
-        # Delete event from database
         result = supabase.table("CreaLab_events").delete().eq("id", event_id).execute()
         
         if result.data:
+            try:
+                if sio:
+                    await sio.emit("events_updated", {"action": "deleted", "event_id": event_id})
+            except Exception as socket_error:
+                logging.warning(f"Failed to emit socket event: {str(socket_error)}")
+            
             return {"message": f"Event {event_id} deleted successfully"}
         else:
             raise HTTPException(

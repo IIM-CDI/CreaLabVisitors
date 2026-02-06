@@ -1,9 +1,8 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
 
 
-class EventData(BaseModel):
+class EventCreate(BaseModel):
     id: str
     title: str
     user: str
@@ -14,18 +13,7 @@ class EventData(BaseModel):
     duration: str
     color: str
     id_card: str
-    accepted: bool
 
 
-class EventCreateData(BaseModel):
-    id: str
-    title: str
-    user: str
-    start: datetime
-    startStr: str
-    end: datetime
-    endStr: str
-    duration: str
-    color: str
-    id_card: str
-    accepted: bool
+class Event(EventCreate):
+    accepted: bool = False
