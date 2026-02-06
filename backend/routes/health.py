@@ -5,9 +5,9 @@ router = APIRouter()
 
 @router.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"Hello": "Bonjour"}
 
 
 @router.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    return {"status": "en bonne santé"}

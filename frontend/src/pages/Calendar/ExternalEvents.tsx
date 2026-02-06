@@ -40,7 +40,7 @@ const ExternalEvents: React.FC<ExternalEventsProps> = ({ userData }) => {
 
     return (
         <div id="external-events">
-            <p><strong>Draggable Events</strong></p>
+            <p><strong>Activités Disponibles</strong></p>
             {draggableEvents
             .filter(event => event.visibility === 'all' || (event.visibility === 'staff' && userData?.role === 'staff'))
             .map((event) => (

@@ -37,10 +37,10 @@ def validate_email_token(token: str, expected_action: str, expected_event_id: st
     try:
         payload = jwt.decode(token, EMAIL_TOKEN_SECRET, algorithms=["HS256"])
         if payload.get("action") != expected_action or payload.get("event_id") != expected_event_id:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid token")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token invalide")
         return payload
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired token")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Token invalide ou expiré")
 
 def send_approval_email(event_data: dict) -> bool:
     try:
@@ -89,18 +89,18 @@ async def create_event(event_data: EventCreate):
             except Exception as socket_error:
                 logging.warning(f"Failed to emit socket event: {str(socket_error)}")
             
-            return {"message": "Event created successfully", "data": result.data[0]}
+            return {"message": "Événement créé avec succès", "data": result.data[0]}
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Failed to create event"
+                detail="Échec de la création de l'événement"
             )
             
     except Exception as e:
         logging.error("Error creating event: %s", str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error creating event: {str(e)}"
+            detail=f"Erreur lors de la création de l'événement : {str(e)}"
         )
 
 
@@ -112,7 +112,7 @@ def get_all_events():
         result = supabase.table("CreaLab_events").select("*").execute()
         
         return {
-            "message": "Events retrieved successfully",
+            "message": "Événements récupérés avec succès",
             "count": len(result.data),
             "data": result.data
         }
@@ -121,7 +121,7 @@ def get_all_events():
         logging.error("Error retrieving events: %s", str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error retrieving events: {str(e)}"
+            detail=f"Erreur lors de la récupération des événements : {str(e)}"
         )
         
 @router.get("/unaccepted-events")
@@ -132,7 +132,7 @@ def get_unaccepted_events():
         result = supabase.table("CreaLab_events").select("*").eq("accepted", False).execute()
         
         return {
-            "message": "Unaccepted events retrieved successfully",
+            "message": "Événements non acceptés récupérés avec succès",
             "count": len(result.data),
             "data": result.data
         }
@@ -141,7 +141,7 @@ def get_unaccepted_events():
         logging.error("Error retrieving unaccepted events: %s", str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error retrieving unaccepted events: {str(e)}"
+            detail=f"Erreur lors de la récupération des événements non acceptés : {str(e)}"
         )
         
 @router.get("/events/{event_id}/approve")
@@ -153,13 +153,13 @@ async def approve_event_via_email(event_id: str, token: str):
         
         event_check = supabase.table("CreaLab_events").select("*").eq("id", event_id).execute()
         if not event_check.data:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Event {event_id} not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Événement {event_id} introuvable")
             
         if event_check.data[0].get("accepted"):
-            message = "Event already approved"
+            message = "Événement déjà approuvé"
         else:
             supabase.table("CreaLab_events").update({"accepted": True}).eq("id", event_id).execute()
-            message = "Event approved successfully"
+            message = "Événement approuvé avec succès"
             
             try:
                 if sio:
@@ -185,7 +185,7 @@ async def reject_event_via_email(event_id: str, token: str):
         validate_email_token(token, "reject", event_id)
         
         result = supabase.table("CreaLab_events").delete().eq("id", event_id).execute()
-        message = "Event rejected and deleted successfully"
+        message = "Événement rejeté et supprimé avec succès"
         
         try:
             if sio:
@@ -219,18 +219,18 @@ async def accept_event(event_id: str):
             except Exception as socket_error:
                 logging.warning(f"Failed to emit socket event: {str(socket_error)}")
             
-            return {"message": f"Event {event_id} accepted successfully", "data": result.data[0]}
+            return {"message": f"Événement {event_id} accepté avec succès", "data": result.data[0]}
         else:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Event with ID {event_id} not found"
+                detail=f"Événement avec l'ID {event_id} introuvable"
             )
             
     except Exception as e:
         logging.error("Error accepting event: %s", str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error accepting event: {str(e)}"
+            detail=f"Erreur lors de l'acceptation de l'événement : {str(e)}"
         )
         
 @router.delete("/delete-event/{event_id}")
@@ -247,16 +247,16 @@ async def delete_event(event_id: str):
             except Exception as socket_error:
                 logging.warning(f"Failed to emit socket event: {str(socket_error)}")
             
-            return {"message": f"Event {event_id} deleted successfully"}
+            return {"message": f"Événement {event_id} supprimé avec succès"}
         else:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Event with ID {event_id} not found"
+                detail=f"Événement avec l'ID {event_id} introuvable"
             )
             
     except Exception as e:
         logging.error("Error deleting event: %s", str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error deleting event: {str(e)}"
+            detail=f"Erreur lors de la suppression de l'événement : {str(e)}"
         )
