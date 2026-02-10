@@ -98,7 +98,11 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
             <div className="connexion_container">
                 <Connexion card_id={card_id} userData={userData} />
                 <ExternalEvents userData={userData} />
-                <CustomEvent />
+                <CustomEvent 
+                    userData={userData} 
+                    card_id={card_id} 
+                    onEventSave={saveEvent} 
+                />
             </div>
 
             <div className="calendar_container">
