@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Header.css";
-import CustomModal from "../../components/CustomModal/CustomModal";
+import ValidateEvents from "../../components/ValidateEvents/ValidateEvents";
 
 interface HeaderInterface {
     setScannedCardId?: (id: string | null) => void;
@@ -28,7 +28,7 @@ const Header = ({ setScannedCardId, isAdmin, onEventChange }: HeaderInterface) =
 
     return (
         <header className="app_header">
-            <CustomModal isOpen={isModalOpen} onClose={closeModal} onEventChange={onEventChange} />
+            <ValidateEvents isOpen={isModalOpen} onClose={closeModal} onEventChange={onEventChange} />
             {isAdmin && <button className="modal_button" onClick={openModal}>Espace Admin - Validation des events</button>}
             <button className="logout_button" onClick={handleLogout}> Déconnexion </button>
         </header>

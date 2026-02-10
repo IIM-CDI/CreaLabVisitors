@@ -1,15 +1,14 @@
 .user_info {
-    font-size: 1rem;
     margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
-.user_info p {
-    font-size: 1.1rem;
-    margin: 8px 0;
-}
-
-button {
-    padding: 10px 20px;
+.connexion_button {
+    padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.05rem;

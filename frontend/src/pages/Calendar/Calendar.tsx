@@ -8,6 +8,7 @@ import { io, Socket } from "socket.io-client";
 import "./Calendar.css";
 import Connexion from "../../components/Connexion/Connexion";
 import ExternalEvents from "./ExternalEvents";
+import CustomEvent from "../../components/CustomEvent/CustomEvent";
 import { useCalendarApi } from "./hooks/useCalendarApi";
 import { calendarConfig } from "./constants";
 import { CalendarEvent, CalendarEventData } from "./types";
@@ -97,6 +98,11 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
             <div className="connexion_container">
                 <Connexion card_id={card_id} userData={userData} />
                 <ExternalEvents userData={userData} />
+                <CustomEvent 
+                    userData={userData} 
+                    card_id={card_id} 
+                    onEventSave={saveEvent} 
+                />
             </div>
 
             <div className="calendar_container">

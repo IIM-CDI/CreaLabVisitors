@@ -1,16 +1,16 @@
 import React, { useEffect } from "react";
-import "./CustomModal.css";
+import "./ValidateEvents.css";
 import { useAuth } from '../../context/AuthContext';
 import ModalButtons from "../ModalButtons/ModalButtons";
 import { io, Socket } from "socket.io-client";
 
-interface CustomModalProps {
+interface ValidateEventsProps {
     isOpen: boolean;
     onClose: () => void;
     onEventChange?: () => void;
 }
 
-const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, onEventChange }) => {
+const ValidateEvents: React.FC<ValidateEventsProps> = ({ isOpen, onClose, onEventChange }) => {
     const { token } = useAuth();
     const [unacceptedEvents, setUnacceptedEvents] = React.useState<any[]>([]);
 
@@ -210,4 +210,4 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, onEventChang
     );
 };
 
-export default CustomModal;
+export default ValidateEvents;

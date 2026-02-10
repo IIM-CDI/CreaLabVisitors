@@ -37,7 +37,7 @@ const Connexion = ({ card_id, userData }: ConnexionProps) => {
                         </p>
                         <p>Email: {userData.email}</p>
                         <p>Role: {userData.role}</p>
-                        <button onClick={() => setModificationOpen(true)}>
+                        <button className="connexion_button" onClick={() => setModificationOpen(true)}>
                             Modifier les informations
                         </button>
                     </div>
