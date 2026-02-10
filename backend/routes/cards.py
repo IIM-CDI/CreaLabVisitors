@@ -1,26 +1,21 @@
 from fastapi import APIRouter
 from models import CardScan, UserRole
 import logging
-import jwt
-from datetime import datetime, timedelta
+from datetime import datetime
 
 router = APIRouter()
 
 supabase = None
 latest_card = None
 sio = None
-SECRET_KEY = None
-TOKEN_EXPIRE_SECONDS = None
 FRONTEND_URL = None
 
 
-def init_card_routes(db, card_data, socket_io, secret, token_expire, frontend_url):
-    global supabase, latest_card, sio, SECRET_KEY, TOKEN_EXPIRE_SECONDS, FRONTEND_URL
+def init_card_routes(db, card_data, socket_io, frontend_url):
+    global supabase, latest_card, sio, FRONTEND_URL
     supabase = db
     latest_card = card_data
     sio = socket_io
-    SECRET_KEY = secret
-    TOKEN_EXPIRE_SECONDS = token_expire
     FRONTEND_URL = frontend_url
 
 
@@ -46,13 +41,6 @@ def check_existing_card(card_id: str):
     result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
     exists = len(result.data) > 0
     if exists:
-        user_role = result.data[0].get("role", UserRole.ETUDIANT.value)
-        payload = {
-            "card_id": card_id,
-            "role": user_role,
-            "exp": datetime.utcnow() + timedelta(seconds=TOKEN_EXPIRE_SECONDS)
-        }
-        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
-        return {"exists": True, "data": result.data, "token": token}
+        return {"exists": True, "data": result.data}
     else:
         return {"exists": False}

@@ -4,7 +4,6 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import frLocale from '@fullcalendar/core/locales/fr';
-import { useAuth } from '../../context/AuthContext';
 import { io, Socket } from "socket.io-client";
 import "./Calendar.css";
 import Connexion from "../../components/Connexion/Connexion";
@@ -14,8 +13,7 @@ import { calendarConfig } from "./constants";
 import { CalendarEvent, CalendarEventData } from "./types";
 
 const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
-    const { token } = useAuth();
-    const { userData, events, getProfile, fetchEvents, saveEvent } = useCalendarApi(token);
+    const { userData, events, getProfile, fetchEvents, saveEvent } = useCalendarApi();
 
     const handleEventChange = useCallback(() => {
         fetchEvents();
@@ -28,11 +26,11 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
 
     useEffect(() => {
         if (card_id) getProfile(card_id);
-    }, [card_id, token]);
+    }, [card_id, getProfile]);
 
     useEffect(() => {
         fetchEvents();
-    }, [token]);
+    }, [fetchEvents]);
 
     useEffect(() => {
         setIsAdmin(!!userData?.admin);
@@ -66,7 +64,7 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
             });
         };
 
-        if (token) {
+        if (card_id) {
             initSocket();
         }
 
@@ -75,7 +73,7 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
                 socket.disconnect();
             }
         };
-    }, [token, fetchEvents]);
+    }, [card_id, fetchEvents]);
 
     const handleEventReceive = (info: any) => {
         const eventData: CalendarEventData = {
