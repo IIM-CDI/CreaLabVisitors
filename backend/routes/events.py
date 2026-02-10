@@ -56,6 +56,47 @@ def send_approval_email(event_data: dict) -> bool:
         logging.error(f"Error sending approval email: {str(e)}")
         return False
 
+def get_user_info_by_card_id(card_id: str) -> tuple:
+    """Get user email and name from card_id. Returns (email, name) tuple or (None, None) if not found."""
+    try:
+        result = supabase.table("CreaLab_visitors").select("email", "first_name", "last_name").eq("id_card", card_id).execute()
+        if result.data and len(result.data) > 0:
+            user_data = result.data[0]
+            email = user_data.get("email")
+            first_name = user_data.get("first_name", "")
+            last_name = user_data.get("last_name", "")
+            name = f"{first_name} {last_name}".strip() or "Utilisateur"
+            return email, name
+        return None, None
+    except Exception as e:
+        logging.error(f"Error getting user info for card {card_id}: {str(e)}")
+        return None, None
+
+def send_notification_email(event_data: dict, action: str) -> bool:
+    """Send acceptance or rejection email to the event creator"""
+    try:
+        card_id = event_data.get("id_card")
+        if not card_id:
+            logging.warning("No card_id found for event, cannot send notification email")
+            return False
+            
+        user_email, user_name = get_user_info_by_card_id(card_id)
+        if not user_email:
+            logging.warning(f"No email found for card {card_id}, cannot send notification email")
+            return False
+        
+        if action == "accept":
+            return email_service.send_event_acceptance_email(event_data, user_email, user_name)
+        elif action == "reject":
+            return email_service.send_event_rejection_email(event_data, user_email, user_name)
+        else:
+            logging.error(f"Unknown action: {action}")
+            return False
+            
+    except Exception as e:
+        logging.error(f"Error sending notification email: {str(e)}")
+        return False
+
 
 @router.post("/events")
 async def create_event(event_data: EventCreate):
@@ -154,12 +195,22 @@ async def approve_event_via_email(event_id: str, token: str):
         event_check = supabase.table("CreaLab_events").select("*").eq("id", event_id).execute()
         if not event_check.data:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Événement {event_id} introuvable")
-            
-        if event_check.data[0].get("accepted"):
+        
+        event_data = event_check.data[0]
+        
+        if event_data.get("accepted"):
             message = "Événement déjà approuvé"
         else:
+            # Update event as accepted
             supabase.table("CreaLab_events").update({"accepted": True}).eq("id", event_id).execute()
             message = "Événement approuvé avec succès"
+            
+            # Send notification email to the event creator
+            try:
+                email_sent = send_notification_email(event_data, "accept")
+                logging.info(f"Acceptance notification email sent: {email_sent}")
+            except Exception as email_error:
+                logging.warning(f"Failed to send acceptance notification email: {str(email_error)}")
             
             try:
                 if sio:
@@ -184,6 +235,21 @@ async def reject_event_via_email(event_id: str, token: str):
     try:
         validate_email_token(token, "reject", event_id)
         
+        # Get event data before deletion for notification email
+        event_check = supabase.table("CreaLab_events").select("*").eq("id", event_id).execute()
+        if not event_check.data:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Événement {event_id} introuvable")
+        
+        event_data = event_check.data[0]
+        
+        # Send notification email to the event creator before deletion
+        try:
+            email_sent = send_notification_email(event_data, "reject")
+            logging.info(f"Rejection notification email sent: {email_sent}")
+        except Exception as email_error:
+            logging.warning(f"Failed to send rejection notification email: {str(email_error)}")
+        
+        # Delete the event
         result = supabase.table("CreaLab_events").delete().eq("id", event_id).execute()
         message = "Événement rejeté et supprimé avec succès"
         
@@ -208,11 +274,29 @@ async def accept_event(event_id: str):
     logging.info("Accepting event with ID: %s", event_id)
     
     try:
+        # Get event data first for notification email
+        event_check = supabase.table("CreaLab_events").select("*").eq("id", event_id).execute()
+        if not event_check.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Événement avec l'ID {event_id} introuvable"
+            )
+        
+        event_data = event_check.data[0]
+        
+        # Update the event as accepted
         result = supabase.table("CreaLab_events").update({
             "accepted": True
         }).eq("id", event_id).execute()
         
         if result.data:
+            # Send notification email to the event creator
+            try:
+                email_sent = send_notification_email(event_data, "accept")
+                logging.info(f"Acceptance notification email sent: {email_sent}")
+            except Exception as email_error:
+                logging.warning(f"Failed to send acceptance notification email: {str(email_error)}")
+            
             try:
                 if sio:
                     await sio.emit("events_updated", {"action": "accepted", "event_id": event_id})
@@ -238,6 +322,24 @@ async def delete_event(event_id: str):
     logging.info("Deleting event with ID: %s", event_id)
     
     try:
+        # Get event data before deletion for notification email
+        event_check = supabase.table("CreaLab_events").select("*").eq("id", event_id).execute()
+        if not event_check.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Événement avec l'ID {event_id} introuvable"
+            )
+        
+        event_data = event_check.data[0]
+        
+        # Send notification email to the event creator before deletion
+        try:
+            email_sent = send_notification_email(event_data, "reject")
+            logging.info(f"Rejection notification email sent: {email_sent}")
+        except Exception as email_error:
+            logging.warning(f"Failed to send rejection notification email: {str(email_error)}")
+        
+        # Delete the event
         result = supabase.table("CreaLab_events").delete().eq("id", event_id).execute()
         
         if result.data:

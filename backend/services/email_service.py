@@ -76,21 +76,6 @@ class EmailService:
         
         html_template = self._load_template('event_approval.html')
         
-        text_content = f"""
-        New Event Approval Required
-        
-        Event: {event_data.get('title', 'N/A')}
-        User: {event_data.get('user', 'N/A')}
-        Start: {event_data.get('startStr', 'N/A')}
-        End: {event_data.get('endStr', 'N/A')}
-        Duration: {event_data.get('duration', 'N/A')}
-        
-        Approve: {approve_url}
-        Reject: {reject_url}
-        
-        Links expire in 7 days.
-        """
-        
         html_content = html_template.render(
             event_title=event_data.get('title', 'N/A'),
             event_user=event_data.get('user', 'N/A'),
@@ -103,7 +88,39 @@ class EmailService:
         
         subject = f"Nouvel Event: {event_data.get('title', 'Event')}"
         
-        return self.send_email(admin_email, subject, html_content, text_content)
+        return self.send_email(admin_email, subject, html_content)
+    
+    def send_event_acceptance_email(self, event_data: Dict[str, Any], user_email: str, user_name: str) -> bool:
+        """Send email notification when an event is accepted"""
+        html_template = self._load_template('event_accepted.html')
+        
+        html_content = html_template.render(
+            user_name=user_name,
+            event_title=event_data.get('title', 'N/A'),
+            event_start=event_data.get('startStr', 'N/A'),
+            event_end=event_data.get('endStr', 'N/A'),
+            event_duration=event_data.get('duration', 'N/A')
+        )
+        
+        subject = f"✅ Votre événement '{event_data.get('title', 'Event')}' a été approuvé"
+        
+        return self.send_email(user_email, subject, html_content)
+    
+    def send_event_rejection_email(self, event_data: Dict[str, Any], user_email: str, user_name: str) -> bool:
+        """Send email notification when an event is rejected"""
+        html_template = self._load_template('event_rejected.html')
+        
+        html_content = html_template.render(
+            user_name=user_name,
+            event_title=event_data.get('title', 'N/A'),
+            event_start=event_data.get('startStr', 'N/A'),
+            event_end=event_data.get('endStr', 'N/A'),
+            event_duration=event_data.get('duration', 'N/A')
+        )
+        
+        subject = f"❌ Votre événement '{event_data.get('title', 'Event')}' a été rejeté"
+        
+        return self.send_email(user_email, subject, html_content)
 
 
 email_service = EmailService()
