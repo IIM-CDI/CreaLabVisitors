@@ -1,5 +1,4 @@
 import React from "react";
-import { useAuth } from '../../context/AuthContext';
 import "./Inscription.css";
 
 interface InscriptionInterface {
@@ -8,8 +7,6 @@ interface InscriptionInterface {
 
 
 const Inscription = ({card_id}: InscriptionInterface) => {
-
-    const { token } = useAuth();
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -21,7 +18,6 @@ const Inscription = ({card_id}: InscriptionInterface) => {
         const email = formData.get("email");
 
         const headers: Record<string,string> = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
         const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
         fetch(`${apiUrl}/submit`, {
             method: "POST",

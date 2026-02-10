@@ -22,7 +22,6 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, onEventChang
 
     const getHeaders = () => {
         const headers: Record<string, string> = { "Content-Type": "application/json" };
-        if (token) headers["Authorization"] = `Bearer ${token}`;
         return headers;
     };
 
@@ -86,7 +85,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, onEventChang
         if (isOpen) {
             fetchUnacceptedEvents();
         }
-    }, [isOpen, token]);
+    }, [isOpen]);
 
     // Socket connection for real-time event updates
     useEffect(() => {
@@ -163,7 +162,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ isOpen, onClose, onEventChang
             document.removeEventListener('keydown', handleEscapeKey);
             document.body.style.overflow = 'unset';
         };
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, onEventChange]);
 
     if (!isOpen) return null;
 

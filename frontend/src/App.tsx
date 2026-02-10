@@ -11,7 +11,6 @@ type AppState = 'waiting' | 'login' | 'inscription' | 'calendar';
 function AppContent() {
   const [scannedCardId, setScannedCardId] = useState<string | null>(null);
   const [appState, setAppState] = useState<AppState>('login');
-  const [existingCardId, setExistingCardId] = useState<boolean | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [refreshEvents, setRefreshEvents] = useState<(() => void) | undefined>(undefined);
   const { setToken } = useAuth();
@@ -30,9 +29,7 @@ function AppContent() {
         const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
         const response = await fetch(`${apiUrl}/check-card/${id}`);
         const data = await response.json();
-        setExistingCardId(data.exists);
-        if (data.exists && data.token) {
-          setToken(data.token);
+        if (data.exists) {
           setAppState('calendar');
         } else {
           setAppState('inscription');

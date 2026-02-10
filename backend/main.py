@@ -30,13 +30,12 @@ fastapi_app.add_middleware(
 
 latest_card = {"id": None, "ts": None, "role": None}
 FRONTEND_URL = os.getenv("FRONTEND_URL")
-SECRET_KEY = os.getenv("SECRET_KEY", "change_this_secret")
-TOKEN_EXPIRE_SECONDS = int(os.getenv("TOKEN_EXPIRE_SECONDS", "3600"))
+SECRET_KEY = os.getenv("SECRET_KEY", "change_this_secret")  # Only for email tokens
 
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[FRONTEND_URL] if FRONTEND_URL else "*")
 
-init_card_routes(supabase, latest_card, sio, SECRET_KEY, TOKEN_EXPIRE_SECONDS, FRONTEND_URL)
-init_user_routes(supabase, latest_card, SECRET_KEY, FRONTEND_URL)
+init_card_routes(supabase, latest_card, sio, FRONTEND_URL)
+init_user_routes(supabase, latest_card, FRONTEND_URL)
 init_event_routes(supabase, sio, SECRET_KEY, FRONTEND_URL)
 
 fastapi_app.include_router(health_router)
