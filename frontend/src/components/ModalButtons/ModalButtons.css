@@ -1,0 +1,86 @@
+/* Modal buttons container */
+.modal-buttons-container {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+/* Base button styles */
+.modal-buttons-container button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+/* Disabled state */
+.modal-buttons-container button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Validate button */
+.validate-button {
+    background-color: #10b981;
+    color: white;
+}
+
+.validate-button:hover:not(:disabled) {
+    background-color: #059669;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.validate-button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(16, 185, 129, 0.3);
+}
+
+/* Delete button */
+.delete-button {
+    background-color: #ef4444;
+    color: white;
+}
+
+.delete-button:hover:not(:disabled) {
+    background-color: #dc2626;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+.delete-button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(239, 68, 68, 0.3);
+}
+
+/* Focus states for accessibility */
+.validate-button:focus {
+    outline: 2px solid #10b981;
+    outline-offset: 2px;
+}
+
+.delete-button:focus {
+    outline: 2px solid #ef4444;
+    outline-offset: 2px;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .modal-buttons-container {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-buttons-container button {
+        width: 100%;
+    }
+}

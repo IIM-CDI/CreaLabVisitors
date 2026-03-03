@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #333333;
+            background-color: #f4f4f4;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border: 1px solid #dddddd;
+        }
+        
+        .header {
+            background-color: #dc2626;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: normal;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .content p {
+            margin: 0 0 16px 0;
+            color: #555555;
+        }
+        
+        .event-info {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            border-left: 4px solid #dc2626;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .event-info h2 {
+            margin: 0 0 15px 0;
+            color: #b91c1c;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .event-info p {
+            margin: 5px 0;
+            color: #374151;
+        }
+        
+        .event-info strong {
+            color: #991b1b;
+        }
+        
+        .rejection-message {
+            background-color: #fee2e2;
+            border: 1px solid #fca5a5;
+            padding: 15px;
+            margin: 20px 0;
+            color: #991b1b;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 4px;
+        }
+        
+        .info-note {
+            background-color: #fef3c7;
+            border: 1px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            color: #92400e;
+            font-size: 12px;
+        }
+        
+        .reasons {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 15px;
+            margin: 20px 0;
+            color: #475569;
+            font-size: 13px;
+        }
+        
+        .reasons h3 {
+            margin: 0 0 10px 0;
+            color: #334155;
+            font-size: 14px;
+        }
+        
+        .reasons ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .reasons li {
+            margin: 5px 0;
+        }
+        
+        .footer {
+            background-color: #f9fafb;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+            color: #6b7280;
+            font-size: 12px;
+        }
+        
+        .footer p {
+            margin: 3px 0;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                margin: 10px;
+                border: none;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>❌ Événement Rejeté</h1>
+        </div>
+        
+        <div class="content">
+            <p>Bonjour {{ user_name }},</p>
+            <p>Nous regrettons de vous informer que votre événement a été <strong>rejeté</strong> par l'administration CreaLab.</p>
+            
+            <div class="rejection-message">
+                Votre demande d'événement n'a pas pu être approuvée
+            </div>
+            
+            <div class="event-info">
+                <h2>{{ event_title }}</h2>
+                <p><strong>Début :</strong> {{ event_start }}</p>
+                <p><strong>Fin :</strong> {{ event_end }}</p>
+                <p><strong>Durée :</strong> {{ event_duration }}</p>
+            </div>
+            
+            <div class="reasons">
+                <h3>Raisons possibles du rejet :</h3>
+                <ul>
+                    <li>Conflit avec d'autres événements planifiés</li>
+                    <li>Ressources non disponibles pour la période demandée</li>
+                    <li>Informations incomplètes ou incorrectes</li>
+                    <li>Non-conformité avec les règles du CreaLab</li>
+                </ul>
+            </div>
+            
+            <p>Si vous pensez qu'il y a eu une erreur ou si vous souhaitez obtenir plus d'informations sur les raisons du rejet, n'hésitez pas à contacter l'administration.</p>
+            
+            <p>Vous pouvez également soumettre une nouvelle demande d'événement avec les modifications appropriées.</p>
+            
+            <div class="info-note">
+                Pour toute question, contactez l'administration CreaLab qui se fera un plaisir de vous aider.
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Gestion des Événements CreaLab</strong></p>
+            <p>Ceci est une notification automatisée. Veuillez ne pas répondre à cet email.</p>
+        </div>
+    </div>
+</body>
+</html>

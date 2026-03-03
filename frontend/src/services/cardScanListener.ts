@@ -10,7 +10,8 @@ export const setCardScanCallback = (callback: (id: string) => void) => {
 
 const initSocket = () => {
     if (socket) return;
-    socket = io("http://localhost:8000", { transports: ["websocket"] });
+    const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
+    socket = io(apiUrl || "http://localhost:8000", { transports: ["websocket"] });
 
     socket.on("connect", () => {
         console.log("Card socket connected", socket?.id);

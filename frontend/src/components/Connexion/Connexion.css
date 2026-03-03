@@ -1,22 +1,18 @@
-.connexion_container {
+.user_info {
+    margin-bottom: 20px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100%;
+    gap: 10px;
 }
 
-h2{
-    font-size: 2.5em;
-    margin-bottom: 20px;
-}
-
-user_info{
-    font-size: 1.5em;
-    margin-bottom: 20px;
-}
-
-p{
-    font-size: 1.2em;
-    margin-bottom: 20px;
+.connexion_button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.05rem;
+    background-color: #4cafaf;
+    color: white;
+    border: none;
 }

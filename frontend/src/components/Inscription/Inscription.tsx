@@ -17,13 +17,16 @@ const Inscription = ({card_id}: InscriptionInterface) => {
         const nom = formData.get("nom");
         const email = formData.get("email");
 
-        fetch("http://localhost:8000/submit", {
+        const headers: Record<string,string> = { "Content-Type": "application/json" };
+        const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
+        fetch(`${apiUrl}/submit`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers,
             body: JSON.stringify({ prenom, nom, email, card_id }),
         })
         .then(() => {
             formEl.reset();
+            window.location.reload();
         })
         .catch((error) => {
             console.error("Error submitting profile:", error);
@@ -32,25 +35,32 @@ const Inscription = ({card_id}: InscriptionInterface) => {
 
     return (
         <div className="inscription_container">
-            <h2>Inscription Form</h2>
+            <h2>Formulaire d'Inscription</h2>
             <form className="inscription_form" onSubmit={handleSubmit}>
                 <label className="form_prenom">
-                    Prenom:
+                    Prénom :
                     <input type="text" name="prenom" required minLength={1}  />
                 </label>
                 <label className="form_nom">
-                    Nom:
+                    Nom :
                     <input type="text" name="nom" required minLength={1} />
                 </label>
                 <label className="form_email">
-                    Email:
+                    Email :
                     <input type="email" name="email" required />
                 </label>
                 <label className="form_card_id">
-                    Card ID:
+                    ID Carte :
                     <input type="text" name="card_id" value={card_id} disabled />
                 </label>
-                <button type="submit">Register</button>
+                <label className="form_role">
+                    Rôle :
+                    <select name="role" >
+                        <option value="etudiant" selected>Etudiant</option>
+                        <option value="staff">Staff</option>
+                    </select>
+                </label>
+                <button type="submit">S'inscrire</button>
             </form>
         </div>
     );

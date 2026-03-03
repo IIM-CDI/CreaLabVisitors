@@ -1,14 +1,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from supabase import create_client
 from dotenv import load_dotenv
+from routes.health import router as health_router
+from routes.cards import router as cards_router, init_card_routes
+from routes.users import router as users_router, init_user_routes
+from routes.events import router as events_router, init_event_routes
 import os
 import logging
 import socketio
 
 load_dotenv()
-
 logging.basicConfig(level=logging.INFO)
 
 fastapi_app = FastAPI()
@@ -26,84 +28,20 @@ fastapi_app.add_middleware(
     allow_headers=["*"],
 )
 
-
-class CardData(BaseModel):
-    card_id: str
-
-
-class ProfilData(BaseModel):
-    card_id: str
-    prenom: str
-    nom: str
-    email: str
-
-
-latest_card = {"id": None}
-
+latest_card = {"id": None, "ts": None, "role": None}
 FRONTEND_URL = os.getenv("FRONTEND_URL")
+SECRET_KEY = os.getenv("SECRET_KEY", "change_this_secret")  # Only for email tokens
+
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[FRONTEND_URL] if FRONTEND_URL else "*")
 
+init_card_routes(supabase, latest_card, sio, FRONTEND_URL)
+init_user_routes(supabase, latest_card, FRONTEND_URL)
+init_event_routes(supabase, sio, SECRET_KEY, FRONTEND_URL)
 
-@fastapi_app.get("/")
-def read_root():
-    return {"Hello": "World"}
+fastapi_app.include_router(health_router)
+fastapi_app.include_router(cards_router)
+fastapi_app.include_router(users_router)
+fastapi_app.include_router(events_router)
 
-
-@fastapi_app.get("/health")
-def health_check():
-    return {"status": "healthy"}
-
-
-@fastapi_app.get("/latest-card")
-def get_latest_card():
-    return latest_card
-
-
-@fastapi_app.post("/getCard")
-async def get_card(card_data: CardData):
-    logging.info("Card scanned: %s", card_data.card_id)
-    latest_card["id"] = card_data.card_id
-    try:
-        await sio.emit("card_scanned", card_data.card_id)
-    except Exception:
-        logging.exception("Failed to emit socket event for scanned card")
-    return {"message": f"Card {card_data.card_id} received successfully"}
-
-
-@fastapi_app.get("/check-card/{card_id}")
-def check_existing_card(card_id: str):
-    result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
-    exists = len(result.data) > 0
-    if exists:
-        return {"exists": True, "data": result.data}
-    else:
-        return {"exists": False}
-
-
-@fastapi_app.post("/submit")
-def submit_data(data: ProfilData):
-    logging.info("Submitting profile for card: %s", data.card_id)
-    latest_card["id"] = data.card_id
-    supabase.table("CreaLab_visitors").insert({
-        "id_card": data.card_id,
-        "first_name": data.prenom,
-        "last_name": data.nom,
-        "email": data.email
-    }).execute()
-    return {"message": f"Card {data.card_id} received successfully"}
-
-
-@fastapi_app.get("/get-profile/{card_id}")
-def get_profile(card_id: str):
-    result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
-    if len(result.data) > 0:
-        return {"found": True, "data": result.data[0]}
-    else:
-        return {"found": False}
-
-
-# Wrap FastAPI app with Socket.IO ASGI app so uvicorn can serve both
 asgi_app = socketio.ASGIApp(sio, other_asgi_app=fastapi_app)
-
-# Export top-level `app` for uvicorn
 app = asgi_app

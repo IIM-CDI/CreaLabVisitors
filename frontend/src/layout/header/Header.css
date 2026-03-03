@@ -7,6 +7,16 @@
     color: #fff;
 }
 
+.modal_button{
+    background-color: #61dafb;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: background-color 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+}
+
 .logout_button {
     margin-left: auto;
     background-color: #61dafb;

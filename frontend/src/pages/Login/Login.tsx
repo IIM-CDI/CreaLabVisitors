@@ -1,39 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import "./Login.css";
-import Inscription from "../../components/Inscription/Inscription";
-import Connexion from "../../components/Connexion/Connexion";
 
-type Props = {
-    scannedCardId: string | null;
-};
+// This component is now simplified as the main login logic has been moved to App.tsx
+// It can be used for specific login-related UI if needed in the future
 
-const Login = ({ scannedCardId }: Props) => {
-    const [existingCardId, setExistingCardId] = useState<boolean | null>(null);
-    
-    useEffect(() => {
-        const checkExistingCard = async (id: string) => {
-            try {
-                const response = await fetch(`http://localhost:8000/check-card/${id}`);
-                const data = await response.json();
-                setExistingCardId(data.exists);
-            } catch (error) {
-                console.error("Error checking existing card:", error);
-            }
-        }
-        if (scannedCardId) {
-            checkExistingCard(scannedCardId);
-        } else {
-            setExistingCardId(null);
-        }
-    }, [scannedCardId]);
-
+const Login = () => {
     return (
         <div className="Login">
-            {existingCardId === null && <h2>Login Page</h2>}
+            <h2>Page de Connexion</h2>
             <div className="window_container">
-                {existingCardId === null && <p>Please scan your card to proceed.</p>}
-                {existingCardId === false && scannedCardId && <Inscription card_id={scannedCardId} />}
-                {existingCardId === true && scannedCardId && <Connexion card_id={scannedCardId} />}
+                <p>Veuillez scanner votre carte pour continuer.</p>
             </div>
         </div>
     );
