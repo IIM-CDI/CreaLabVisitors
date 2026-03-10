@@ -6,12 +6,10 @@ import interactionPlugin from "@fullcalendar/interaction";
 import frLocale from '@fullcalendar/core/locales/fr';
 import { io, Socket } from "socket.io-client";
 import "./Calendar.css";
-import Connexion from "../../components/Connexion/Connexion";
-import ExternalEvents from "./ExternalEvents";
-import CustomEvent from "../../components/CustomEvent/CustomEvent";
-import { useCalendarApi } from "./hooks/useCalendarApi";
+import Sidebar from "../../layout/sidebar/Sidebar";
+import { useCalendarApi } from "../../hooks/useCalendarApi";
 import { calendarConfig } from "./constants";
-import { CalendarEvent, CalendarEventData } from "./types";
+import { CalendarEvent, CalendarEventData } from "../../types/globalTypes";
 
 const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
     const { userData, events, getProfile, fetchEvents, saveEvent } = useCalendarApi();
@@ -20,7 +18,6 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
         fetchEvents();
     }, [fetchEvents]);
 
-    // Register the refresh function with the parent component
     useEffect(() => {
         setRefreshEvents(() => handleEventChange);
     }, [setRefreshEvents, handleEventChange]);
@@ -37,7 +34,6 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
         setIsAdmin(!!userData?.admin);
     }, [userData, setIsAdmin]);
 
-    // Socket connection for real-time event updates
     useEffect(() => {
         let socket: Socket | null = null;
         
@@ -56,7 +52,6 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
 
             socket.on("events_updated", (data: { action: string; event?: any; event_id?: string }) => {
                 console.log(`Event ${data.action}:`, data);
-                // Refresh the calendar when any event is updated
                 fetchEvents();
             });
 
@@ -95,15 +90,8 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
 
     return (
         <>
-            <div className="connexion_container">
-                <Connexion card_id={card_id} userData={userData} />
-                <ExternalEvents userData={userData} />
-                <CustomEvent 
-                    userData={userData} 
-                    card_id={card_id} 
-                    onEventSave={saveEvent} 
-                />
-            </div>
+
+            <Sidebar userData={userData} card_id={card_id} onEventSave={saveEvent} />
 
             <div className="calendar_container">
                 <h2>Calendrier des Réservations</h2>

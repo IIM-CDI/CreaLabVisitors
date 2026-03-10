@@ -1,5 +1,9 @@
-import React from "react";
+import React, {useState} from "react";
 import "./Inscription.css";
+import FormText from "../FormText/FormText";
+import FormEmail from "../FormEmail/FormEmail";
+import Bouton from "../Bouton/Bouton";
+import { useApi } from "../../hooks/useApi";
 
 interface InscriptionInterface {
     card_id: string;
@@ -7,25 +11,33 @@ interface InscriptionInterface {
 
 
 const Inscription = ({card_id}: InscriptionInterface) => {
+    const { getApiUrl, getHeaders } = useApi();
+
+    
+    const [prenom, setPrenom] = useState("");
+    const [nom, setNom] = useState("");
+    const [email, setEmail] = useState("");
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        const formEl = event.target as HTMLFormElement;
 
-        const formData = new FormData(formEl);
-        const prenom = formData.get("prenom");
-        const nom = formData.get("nom");
-        const email = formData.get("email");
-
-        const headers: Record<string,string> = { "Content-Type": "application/json" };
-        const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
+        const headers = getHeaders();
+        const apiUrl = getApiUrl();
         fetch(`${apiUrl}/submit`, {
             method: "POST",
             headers,
-            body: JSON.stringify({ prenom, nom, email, card_id }),
+            body: JSON.stringify({
+                first_name: String(prenom),
+                last_name: String(nom),
+                email: String(email),
+                card_id,
+                role: "etudiant"
+            }),
         })
         .then(() => {
-            formEl.reset();
+            setPrenom("");
+            setNom("");
+            setEmail("");
             window.location.reload();
         })
         .catch((error) => {
@@ -37,30 +49,32 @@ const Inscription = ({card_id}: InscriptionInterface) => {
         <div className="inscription_container">
             <h2>Formulaire d'Inscription</h2>
             <form className="inscription_form" onSubmit={handleSubmit}>
-                <label className="form_prenom">
-                    Prénom :
-                    <input type="text" name="prenom" required minLength={1}  />
-                </label>
-                <label className="form_nom">
-                    Nom :
-                    <input type="text" name="nom" required minLength={1} />
-                </label>
-                <label className="form_email">
-                    Email :
-                    <input type="email" name="email" required />
-                </label>
-                <label className="form_card_id">
-                    ID Carte :
-                    <input type="text" name="card_id" value={card_id} disabled />
-                </label>
-                <label className="form_role">
-                    Rôle :
-                    <select name="role" >
-                        <option value="etudiant" selected>Etudiant</option>
-                        <option value="staff">Staff</option>
-                    </select>
-                </label>
-                <button type="submit">S'inscrire</button>
+                <FormText
+                    label="Prénom"
+                    value={prenom}
+                    onChange={setPrenom}
+                />
+                <FormText
+                    label="Nom"
+                    value={nom}
+                    onChange={setNom}
+                />
+                <FormEmail
+                    label="Email"
+                    value={email}
+                    onChange={setEmail}
+                />
+                <FormText
+                    label="ID Carte"
+                    value={card_id}
+                    readonly
+                />
+                <FormText
+                    label="Rôle"
+                    value="etudiant"
+                    readonly
+                />
+                <Bouton type="submit" component_type="primary" label="S'inscrire" />
             </form>
         </div>
     );

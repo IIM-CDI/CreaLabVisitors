@@ -1,0 +1,17 @@
+.sidebar_welcome {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    width: 100%;
+    text-align: center;
+    gap: 10px;
+}
+
+.sidebar_welcome_title {
+    font-size: 1.5em;
+}
+.sidebar_welcome_text {
+    font-size: 1em;
+    color: #555;
+}

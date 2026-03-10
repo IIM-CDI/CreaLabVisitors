@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { UserData, CalendarEventData, FormattedCalendarEvent } from '../types';
+import { UserData, CalendarEventData, FormattedCalendarEvent } from '../types/globalTypes';
 
 export const useCalendarApi = () => {
     const [userData, setUserData] = useState<UserData | null>(null);

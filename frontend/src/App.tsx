@@ -49,14 +49,18 @@ function AppContent() {
     switch (appState) {
       case 'waiting':
         return (
-          <div className="waiting-container">
-            <h2>Traitement de la carte...</h2>
-            <p>Veuillez patienter pendant que nous vérifions votre carte...</p>
-          </div>
+          <>
+            <div className="background" />
+            <div className="waiting-container">
+              <h2>Traitement de la carte...</h2>
+              <p>Veuillez patienter pendant que nous vérifions votre carte...</p>
+            </div>
+          </>
         );
       
       case 'inscription':
-        return scannedCardId ? <Inscription card_id={scannedCardId} /> : null;
+        return scannedCardId ? 
+            <> <div className="background" /> <Inscription card_id={scannedCardId} /> </>: null;
       
       case 'calendar':
         return (
@@ -68,10 +72,13 @@ function AppContent() {
       case 'login':
       default:
         return (
-          <div className="login-container">
-            <h2>Bienvenue au CreaLab</h2>
-            <p>Veuillez scanner votre carte pour continuer.</p>
-          </div>
+          <>
+            <div className="background" />
+            <div className="login-container">
+              <h2>Bienvenue au CreaLab</h2>
+              <p>Veuillez scanner votre carte pour continuer.</p>
+            </div>
+          </>
         );
     }
   };

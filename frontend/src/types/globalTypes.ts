@@ -1,15 +1,14 @@
-export interface CalendarEvent {
-    card_id: string;
-    setIsAdmin: (isAdmin: boolean) => void;
-    setRefreshEvents: (refreshFn: () => void) => void;
-}
-
 export interface UserData {
     first_name: string;
     last_name: string;
     email: string;
     role: string;
     [key: string]: string;
+}
+export interface CalendarEvent {
+    card_id: string;
+    setIsAdmin: (isAdmin: boolean) => void;
+    setRefreshEvents: (refreshFn: () => void) => void;
 }
 
 export interface DraggableEvent {
@@ -48,4 +47,11 @@ export interface FormattedCalendarEvent {
         id_card: string;
         accepted: boolean;
     };
+}
+
+export interface Event {
+    id: string;
+    title: string;
+    startStr: string;
+    endStr: string;
 }
