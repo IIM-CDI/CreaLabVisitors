@@ -26,12 +26,12 @@
     font-size: 1.2em;
 }
 
-.form_email{
+.inscription_form .form_email{
     grid-column-start: 1;
     grid-column-end: 3;
 }
 
-.bouton {
+.inscription_form .bouton {
     grid-column-start: 1;
     grid-column-end: 3;
 }

@@ -11,8 +11,6 @@ interface SidebarWelcomeProps {
 
 const SidebarWelcome = ({ userData, card_id }: SidebarWelcomeProps) => {
 
-    console.log("Rendering SidebarWelcome with userData:", userData);
-
     const [modificationOpen, setModificationOpen] = useState(false);
 
     return (

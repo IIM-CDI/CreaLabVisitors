@@ -30,3 +30,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 }
+
+.form_email {
+    grid-column: 1 / -1;
+}

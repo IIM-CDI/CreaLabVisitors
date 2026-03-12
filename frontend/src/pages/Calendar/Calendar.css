@@ -1,16 +1,3 @@
-.connexion_container {
-    width: 20%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    height: 100vh;
-    text-align: center;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-right: 1px solid #e0e0e0;
-}
-
 .calendar_container {
     width: 85%;
     height: 100vh;

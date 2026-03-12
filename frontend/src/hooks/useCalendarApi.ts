@@ -1,16 +1,16 @@
 import { useState, useCallback } from 'react';
 import { UserData, CalendarEventData, FormattedCalendarEvent } from '../types/globalTypes';
+import { useApi } from './useApi';
 
 export const useCalendarApi = () => {
+    const { getApiUrl, getHeaders } = useApi();
     const [userData, setUserData] = useState<UserData | null>(null);
     const [events, setEvents] = useState<FormattedCalendarEvent[]>([]);
 
     const getProfile = useCallback(async (id: string) => {
         try {
-            const apiUrl = process.env.REACT_APP_ENV === 'PROD' 
-                ? process.env.REACT_APP_PROD_API_URL 
-                : process.env.REACT_APP_DEV_API_URL;
-            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            const apiUrl = getApiUrl();
+            const headers = getHeaders();
             
             const response = await fetch(`${apiUrl}/get-profile/${id}`, { 
                 headers 
@@ -20,14 +20,12 @@ export const useCalendarApi = () => {
         } catch (error) {
             console.error("Error fetching profile:", error);
         }
-    }, []);
+    }, [getApiUrl, getHeaders]);
 
     const fetchEvents = useCallback(async () => {
         try {
-            const apiUrl = process.env.REACT_APP_ENV === 'PROD' 
-                ? process.env.REACT_APP_PROD_API_URL 
-                : process.env.REACT_APP_DEV_API_URL;
-            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            const apiUrl = getApiUrl();
+            const headers = getHeaders();
             
             const response = await fetch(`${apiUrl}/events`, {
                 method: 'GET',
@@ -63,14 +61,12 @@ export const useCalendarApi = () => {
         } catch (error) {
             console.error("Error fetching events:", error);
         }
-    }, []);
+    }, [getApiUrl, getHeaders]);
 
     const saveEvent = useCallback(async (eventData: CalendarEventData) => {
         try {
-            const apiUrl = process.env.REACT_APP_ENV === 'PROD' 
-                ? process.env.REACT_APP_PROD_API_URL 
-                : process.env.REACT_APP_DEV_API_URL;
-            const headers: Record<string, string> = { "Content-Type": "application/json" };
+            const apiUrl = getApiUrl();
+            const headers = getHeaders();
             
             const response = await fetch(`${apiUrl}/events`, {
                 method: 'POST',
@@ -86,7 +82,7 @@ export const useCalendarApi = () => {
         } catch (error) {
             console.error("Error saving event:", error);
         }
-    }, [fetchEvents]);
+    }, [fetchEvents, getApiUrl, getHeaders]);
 
     return {
         userData,

@@ -4,16 +4,14 @@ import Header from './layout/header/Header';
 import Calendar from './pages/Calendar/Calendar';
 import Inscription from './components/Inscription/Inscription';
 import { setCardScanCallback } from './services/cardScanListener';
-import { AuthProvider, useAuth } from './context/AuthContext';
 
 type AppState = 'waiting' | 'login' | 'inscription' | 'calendar';
 
-function AppContent() {
+function App() {
   const [scannedCardId, setScannedCardId] = useState<string | null>(null);
   const [appState, setAppState] = useState<AppState>('login');
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [refreshEvents, setRefreshEvents] = useState<(() => void) | undefined>(undefined);
-  const { setToken } = useAuth();
 
   useEffect(() => {
     setCardScanCallback((id: string) => {
@@ -43,7 +41,7 @@ function AppContent() {
     if (scannedCardId && appState === 'waiting') {
       checkExistingCard(scannedCardId);
     }
-  }, [scannedCardId, appState, setToken]);
+  }, [scannedCardId, appState]);
 
   const renderContent = () => {
     switch (appState) {
@@ -90,14 +88,6 @@ function AppContent() {
         {renderContent()}
       </div>
     </div>
-  );
-}
-
-function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
   );
 }
 
