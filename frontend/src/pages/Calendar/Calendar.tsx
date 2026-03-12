@@ -5,7 +5,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import frLocale from '@fullcalendar/core/locales/fr';
 import { io, Socket } from "socket.io-client";
-import "./Calendar.css";
+import "./CalendarComponent.css";
+import "./FullCalendar.css";
 import Sidebar from "../../layout/sidebar/Sidebar";
 import { useCalendarApi } from "../../hooks/useCalendarApi";
 import { calendarConfig } from "./constants";
@@ -94,7 +95,6 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
             <Sidebar userData={userData} card_id={card_id} onEventSave={saveEvent} />
 
             <div className="calendar_container">
-                <h2>Calendrier des Réservations</h2>
                 <FullCalendar
                     key={`calendar-${events.length}-${JSON.stringify(events.map(e => ({id: e.id, color: e.backgroundColor})))}`}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -108,6 +108,7 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
                     events={events}
                     editable
                     droppable
+                    allDaySlot={false}
                     eventReceive={handleEventReceive}
                 />
             </div>
