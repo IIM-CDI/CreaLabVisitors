@@ -15,7 +15,7 @@ const SidebarWelcome = ({ userData, card_id }: SidebarWelcomeProps) => {
 
     return (
         <div className="sidebar_welcome">
-            <h2 className="sidebar_welcome_title">Bienvenue {userData.first_name} {userData.last_name}</h2>
+            <h2 className="sidebar_welcome_title">Bonjour {userData.first_name} {userData.last_name}</h2>
             <p className="sidebar_welcome_text">{userData.email}</p>
             <Bouton component_type="primary" label="Modifier les informations" onClick={() => setModificationOpen(true)} />
             {modificationOpen && (
