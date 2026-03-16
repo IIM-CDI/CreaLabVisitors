@@ -4,16 +4,14 @@ import Header from './layout/header/Header';
 import Calendar from './pages/Calendar/Calendar';
 import Inscription from './components/Inscription/Inscription';
 import { setCardScanCallback } from './services/cardScanListener';
-import { AuthProvider, useAuth } from './context/AuthContext';
 
 type AppState = 'waiting' | 'login' | 'inscription' | 'calendar';
 
-function AppContent() {
+function App() {
   const [scannedCardId, setScannedCardId] = useState<string | null>(null);
   const [appState, setAppState] = useState<AppState>('login');
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [refreshEvents, setRefreshEvents] = useState<(() => void) | undefined>(undefined);
-  const { setToken } = useAuth();
 
   useEffect(() => {
     setCardScanCallback((id: string) => {
@@ -43,20 +41,24 @@ function AppContent() {
     if (scannedCardId && appState === 'waiting') {
       checkExistingCard(scannedCardId);
     }
-  }, [scannedCardId, appState, setToken]);
+  }, [scannedCardId, appState]);
 
   const renderContent = () => {
     switch (appState) {
       case 'waiting':
         return (
-          <div className="waiting-container">
-            <h2>Traitement de la carte...</h2>
-            <p>Veuillez patienter pendant que nous vérifions votre carte...</p>
-          </div>
+          <>
+            <div className="background" />
+            <div className="waiting-container">
+              <h2>Traitement de la carte...</h2>
+              <p>Veuillez patienter pendant que nous vérifions votre carte...</p>
+            </div>
+          </>
         );
       
       case 'inscription':
-        return scannedCardId ? <Inscription card_id={scannedCardId} /> : null;
+        return scannedCardId ? 
+            <> <div className="background" /> <Inscription card_id={scannedCardId} /> </>: null;
       
       case 'calendar':
         return (
@@ -68,10 +70,13 @@ function AppContent() {
       case 'login':
       default:
         return (
-          <div className="login-container">
-            <h2>Bienvenue au CreaLab</h2>
-            <p>Veuillez scanner votre carte pour continuer.</p>
-          </div>
+          <>
+            <div className="background" />
+            <div className="login-container">
+              <h2>Bienvenue au CreaLab</h2>
+              <p>Veuillez scanner votre carte pour continuer.</p>
+            </div>
+          </>
         );
     }
   };
@@ -83,14 +88,6 @@ function AppContent() {
         {renderContent()}
       </div>
     </div>
-  );
-}
-
-function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
   );
 }
 

@@ -1,7 +1,11 @@
 from fastapi import APIRouter
 from models import CardScan, UserRole
 import logging
+import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 router = APIRouter()
 
@@ -11,12 +15,12 @@ sio = None
 FRONTEND_URL = None
 
 
-def init_card_routes(db, card_data, socket_io, frontend_url):
+def init_card_routes(db, card_data, socket_io, frontend_url=None):
     global supabase, latest_card, sio, FRONTEND_URL
     supabase = db
     latest_card = card_data
     sio = socket_io
-    FRONTEND_URL = frontend_url
+    FRONTEND_URL = frontend_url or os.getenv("FRONTEND_URL")
 
 
 @router.get("/latest-card")

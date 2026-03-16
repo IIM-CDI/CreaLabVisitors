@@ -1,0 +1,22 @@
+.form_color{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.form_color_label {
+    font-size: 0.875rem;
+    color: #555;
+}
+
+.form_color_input {
+    padding: 0.3rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    color: #111827;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+}
