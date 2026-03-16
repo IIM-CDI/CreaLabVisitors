@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Request, HTTPException, status
 from models import ProfileData
 import logging
+import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 router = APIRouter()
 
@@ -10,11 +14,11 @@ latest_card = None
 FRONTEND_URL = None
 
 
-def init_user_routes(db, card_data, frontend_url):
+def init_user_routes(db, card_data, frontend_url=None):
     global supabase, latest_card, FRONTEND_URL
     supabase = db
     latest_card = card_data
-    FRONTEND_URL = frontend_url
+    FRONTEND_URL = frontend_url or os.getenv("FRONTEND_URL")
 
 
 @router.post("/submit")

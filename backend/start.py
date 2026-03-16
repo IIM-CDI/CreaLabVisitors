@@ -3,6 +3,13 @@ import requests
 import threading
 import uvicorn
 import logging
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+BACKEND_URL = os.getenv("BACKEND_URL")
 
 logging.basicConfig(level=logging.INFO)
 
@@ -31,7 +38,7 @@ def run_card_reader():
                 logging.debug("Hex card id: %s", card_id)
             
             try:
-                requests.post("http://localhost:8000/getCard", json={"card_id": card_id})
+                requests.post(f"{BACKEND_URL}/getCard", json={"card_id": card_id})
             except Exception:
                 logging.exception("Failed to post scanned card to backend")
 

@@ -6,6 +6,9 @@ import jwt
 from datetime import datetime, timedelta
 import logging
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 router = APIRouter()
 
@@ -21,7 +24,7 @@ def init_event_routes(db, socket_io=None, secret_key=None, frontend_url=None):
     sio = socket_io
     EMAIL_TOKEN_SECRET = secret_key + "_email_salt" if secret_key else os.getenv("SECRET_KEY", "change_this_secret") + "_email_salt"
     FRONTEND_URL = frontend_url or os.getenv("FRONTEND_URL")
-    BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+    BACKEND_URL = os.getenv("BACKEND_URL")
 
 def generate_email_token(event_id: str, action: str, admin_email: str = "admin@crealab.com", expires_days: int = 7) -> str:
     payload = {
