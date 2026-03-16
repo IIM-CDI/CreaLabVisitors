@@ -18,6 +18,25 @@ def _get_invitee_email() -> str | None:
     return invitee_email or None
 
 
+def _build_attendees(event_data: dict) -> list[dict]:
+    attendees: list[dict] = []
+    seen: set[str] = set()
+
+    for email in [
+        _get_invitee_email(),
+        event_data.get("creator_email"),
+    ]:
+        if not email:
+            continue
+        normalized = str(email).strip().lower()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        attendees.append({"email": str(email).strip()})
+
+    return attendees
+
+
 def _to_iso_datetime(value) -> str:
     if isinstance(value, datetime):
         dt = value
@@ -82,15 +101,15 @@ def sync_validated_event_to_admin_calendar(event_data: dict) -> dict:
         },
     }
 
-    invitee_email = _get_invitee_email()
-    if invitee_email:
-        payload["attendees"] = [{"email": invitee_email}]
+    attendees = _build_attendees(event_data)
+    if attendees:
+        payload["attendees"] = attendees
 
     access_token = _get_access_token()
     calendar_path = quote(calendar_id, safe="")
     response = requests.post(
         f"https://www.googleapis.com/calendar/v3/calendars/{calendar_path}/events",
-        params={"sendUpdates": "all" if invitee_email else "none"},
+        params={"sendUpdates": "all" if attendees else "none"},
         headers={
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",

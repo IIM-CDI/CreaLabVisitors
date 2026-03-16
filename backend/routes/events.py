@@ -104,7 +104,15 @@ def send_notification_email(event_data: dict, action: str) -> bool:
 
 def sync_event_to_google_calendar(event_data: dict) -> None:
     try:
-        result = sync_validated_event_to_admin_calendar(event_data)
+        event_payload = dict(event_data)
+
+        card_id = event_data.get("id_card")
+        if card_id:
+            creator_email, _ = get_user_info_by_card_id(card_id)
+            if creator_email:
+                event_payload["creator_email"] = creator_email
+
+        result = sync_validated_event_to_admin_calendar(event_payload)
         if result.get("synced"):
             logging.info(f"Google Calendar event created: {result.get('google_event_id')}")
         else:
