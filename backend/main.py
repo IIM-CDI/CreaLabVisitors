@@ -20,7 +20,7 @@ supabase = create_client(
     os.getenv("SUPABASE_KEY")
 )
 
-FRONTEND_URL = os.getenv("FRONTEND_URL")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 fastapi_app.add_middleware(
     CORSMiddleware,
@@ -33,7 +33,7 @@ fastapi_app.add_middleware(
 latest_card = {"id": None, "ts": None, "role": None}
 SECRET_KEY = os.getenv("SECRET_KEY", "change_this_secret")  # Only for email tokens
 
-sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[FRONTEND_URL] if FRONTEND_URL else "*")
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[FRONTEND_URL])
 
 init_card_routes(supabase, latest_card, sio, FRONTEND_URL)
 init_user_routes(supabase, latest_card, FRONTEND_URL)

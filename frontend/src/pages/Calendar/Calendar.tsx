@@ -10,7 +10,7 @@ import "./FullCalendar.css";
 import Sidebar from "../../layout/sidebar/Sidebar";
 import { useCalendarApi } from "../../hooks/useCalendarApi";
 import { calendarConfig } from "./constants";
-import { CalendarEvent, CalendarEventData } from "../../types/globalTypes";
+import { CalendarEvent, CalendarEventData, EventReceiveInfo } from "../../types/globalTypes";
 
 const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
     const { userData, events, getProfile, fetchEvents, saveEvent } = useCalendarApi();
@@ -39,11 +39,9 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
         let socket: Socket | null = null;
         
         const initSocket = () => {
-            const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? 
-                process.env.REACT_APP_PROD_API_URL : 
-                process.env.REACT_APP_DEV_API_URL;
-            
-            socket = io(apiUrl || "http://localhost:8000", { 
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+            socket = io(apiUrl, {
                 transports: ["websocket"] 
             });
 
@@ -51,7 +49,7 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
                 console.log("Calendar socket connected", socket?.id);
             });
 
-            socket.on("events_updated", (data: { action: string; event?: any; event_id?: string }) => {
+            socket.on("events_updated", (data: { action: string; event?: CalendarEventData; event_id?: string }) => {
                 console.log(`Event ${data.action}:`, data);
                 fetchEvents();
             });
@@ -72,17 +70,17 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
         };
     }, [card_id, fetchEvents]);
 
-    const handleEventReceive = (info: any) => {
+    const handleEventReceive = (info: EventReceiveInfo) => {
         const eventData: CalendarEventData = {
             id: info.event.id,
             title: info.event.title,
-            user: info.event.extendedProps?.user || 'Unknown',
-            start: info.event.start,
+            user: (info.event.extendedProps.user as string) || 'Unknown',
+            start: info.event.start || new Date(),
             startStr: info.event.startStr,
-            end: info.event.end,
+            end: info.event.end || info.event.start || new Date(),
             endStr: info.event.endStr,
-            duration: info.event.extendedProps?.duration || '01:00',
-            color: info.event.backgroundColor,
+            duration: (info.event.extendedProps.duration as string) || '01:00',
+            color: info.event.backgroundColor || "#ffffff",
             id_card: card_id,
             accepted: false
         };

@@ -1,8 +1,9 @@
 import { useState, useCallback } from 'react';
+import { Event } from '../types/globalTypes';
 import { useApi } from './useApi';
 
 export const useUnacceptedEvents = () => {
-    const [unacceptedEvents, setUnacceptedEvents] = useState<any[]>([]);
+    const [unacceptedEvents, setUnacceptedEvents] = useState<Event[]>([]);
     const { getApiUrl, getHeaders } = useApi();
 
     const fetchUnacceptedEvents = useCallback(async () => {

@@ -8,8 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-FRONTEND_URL = os.getenv("FRONTEND_URL")
-BACKEND_URL = os.getenv("BACKEND_URL")
+BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
 
 logging.basicConfig(level=logging.INFO)
 

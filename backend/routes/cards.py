@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from models import CardScan, UserRole
+from models import CardScan
 import logging
 import os
 from datetime import datetime
