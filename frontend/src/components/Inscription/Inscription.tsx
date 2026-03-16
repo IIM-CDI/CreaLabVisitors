@@ -47,7 +47,7 @@ const Inscription = ({card_id}: InscriptionInterface) => {
 
     return (
         <div className="inscription_container">
-            <h2>Formulaire d'Inscription</h2>
+            <h2>Formulaire d&apos;Inscription</h2>
             <form className="inscription_form" onSubmit={handleSubmit}>
                 <FormText
                     label="Prénom"

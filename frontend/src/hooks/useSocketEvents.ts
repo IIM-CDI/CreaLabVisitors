@@ -15,7 +15,7 @@ export const useSocketEvents = ({ isOpen, onEventsUpdated }: UseSocketEventsProp
         
         if (isOpen) {
             const apiUrl = getApiUrl();
-            socket = io(apiUrl || "http://localhost:8000", { 
+            socket = io(apiUrl, {
                 transports: ["websocket"] 
             });
 
@@ -23,7 +23,7 @@ export const useSocketEvents = ({ isOpen, onEventsUpdated }: UseSocketEventsProp
                 console.log("Modal socket connected", socket?.id);
             });
 
-            socket.on("events_updated", (data: { action: string; event?: any; event_id?: string }) => {
+            socket.on("events_updated", (data: { action: string; event?: unknown; event_id?: string }) => {
                 console.log(`Modal - Event ${data.action}:`, data);
                 onEventsUpdated();
             });

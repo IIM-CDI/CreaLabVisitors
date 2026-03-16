@@ -24,7 +24,7 @@ function App() {
   useEffect(() => {
     const checkExistingCard = async (id: string) => {
       try {
-        const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? process.env.REACT_APP_PROD_API_URL : process.env.REACT_APP_DEV_API_URL;
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
         const response = await fetch(`${apiUrl}/check-card/${id}`);
         const data = await response.json();
         if (data.exists) {

@@ -1,0 +1,40 @@
+name: Frontend Lint
+
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - "eslint.config.mjs"
+      - "package.json"
+      - ".github/workflows/lint_front.yml"
+  push:
+    branches:
+      - main
+      - develop
+      - "fix/**"
+      - "feat/**"
+    paths:
+      - "frontend/**"
+      - "eslint.config.mjs"
+      - "package.json"
+      - ".github/workflows/lint_front.yml"
+
+jobs:
+  lint-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install root dependencies
+        run: npm install
+
+      - name: Lint frontend
+        run: npx eslint "frontend/**/*.{js,mjs,cjs,ts,tsx}"
+
