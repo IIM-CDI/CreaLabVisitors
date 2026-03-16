@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import RedirectResponse
 from models import EventCreate
 from services.email_service import email_service
+from services.google_calendar_service import sync_validated_event_to_admin_calendar
 import jwt
 from datetime import datetime, timedelta
 import logging
@@ -99,6 +100,25 @@ def send_notification_email(event_data: dict, action: str) -> bool:
     except Exception as e:
         logging.error(f"Error sending notification email: {str(e)}")
         return False
+
+
+def sync_event_to_google_calendar(event_data: dict) -> None:
+    try:
+        event_payload = dict(event_data)
+
+        card_id = event_data.get("id_card")
+        if card_id:
+            creator_email, _ = get_user_info_by_card_id(card_id)
+            if creator_email:
+                event_payload["creator_email"] = creator_email
+
+        result = sync_validated_event_to_admin_calendar(event_payload)
+        if result.get("synced"):
+            logging.info(f"Google Calendar event created: {result.get('google_event_id')}")
+        else:
+            logging.info(f"Google Calendar sync skipped: {result.get('reason')}")
+    except Exception as calendar_error:
+        logging.warning(f"Failed to sync Google Calendar event: {str(calendar_error)}")
 
 
 @router.post("/events")
@@ -207,6 +227,8 @@ async def approve_event_via_email(event_id: str, token: str):
             # Update event as accepted
             supabase.table("CreaLab_events").update({"accepted": True}).eq("id", event_id).execute()
             message = "Événement approuvé avec succès"
+
+            sync_event_to_google_calendar(event_data)
             
             # Send notification email to the event creator
             try:
@@ -253,6 +275,13 @@ async def reject_event_via_email(event_id: str, token: str):
             logging.warning(f"Failed to send rejection notification email: {str(email_error)}")
         
         # Delete the event
+        result = supabase.table("CreaLab_events").delete().eq("id", event_id).execute()
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Événement {event_id} introuvable"
+            )
+
         message = "Événement rejeté et supprimé avec succès"
         
         try:
@@ -292,6 +321,8 @@ async def accept_event(event_id: str):
         }).eq("id", event_id).execute()
         
         if result.data:
+            sync_event_to_google_calendar(event_data)
+
             # Send notification email to the event creator
             try:
                 email_sent = send_notification_email(event_data, "accept")
