@@ -39,11 +39,9 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
         let socket: Socket | null = null;
         
         const initSocket = () => {
-            const apiUrl = process.env.REACT_APP_ENV === 'PROD' ? 
-                process.env.REACT_APP_PROD_API_URL : 
-                process.env.REACT_APP_DEV_API_URL;
-            
-            socket = io(apiUrl || "http://localhost:8000", { 
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+            socket = io(apiUrl, {
                 transports: ["websocket"] 
             });
 

@@ -15,7 +15,7 @@ export const useSocketEvents = ({ isOpen, onEventsUpdated }: UseSocketEventsProp
         
         if (isOpen) {
             const apiUrl = getApiUrl();
-            socket = io(apiUrl || "http://localhost:8000", { 
+            socket = io(apiUrl, {
                 transports: ["websocket"] 
             });
 
