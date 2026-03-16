@@ -49,6 +49,36 @@ export interface FormattedCalendarEvent {
     };
 }
 
+export interface BackendEvent {
+    id: string;
+    title: string;
+    user: string;
+    start: string;
+    startStr: string;
+    end: string;
+    endStr: string;
+    duration: string;
+    color: string;
+    id_card: string;
+    accepted: boolean;
+}
+
+export interface EventReceiveInfo {
+    event: {
+        id: string;
+        title: string;
+        start: Date | null;
+        startStr: string;
+        end: Date | null;
+        endStr: string;
+        backgroundColor: string;
+        extendedProps: {
+            user?: string;
+            duration?: string;
+        };
+    };
+}
+
 export interface Event {
     id: string;
     title: string;

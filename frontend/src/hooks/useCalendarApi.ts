@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { UserData, CalendarEventData, FormattedCalendarEvent } from '../types/globalTypes';
+import { UserData, CalendarEventData, FormattedCalendarEvent, BackendEvent } from '../types/globalTypes';
 import { useApi } from './useApi';
 
 export const useCalendarApi = () => {
@@ -35,7 +35,7 @@ export const useCalendarApi = () => {
             if (response.ok) {
                 const result = await response.json();
                 
-                const formattedEvents: FormattedCalendarEvent[] = result.data.map((event: any) => {
+                const formattedEvents: FormattedCalendarEvent[] = result.data.map((event: BackendEvent) => {
                     const displayColor = event.accepted ? event.color : '#808080';
                     
                     return {
