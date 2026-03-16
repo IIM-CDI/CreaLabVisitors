@@ -36,4 +36,11 @@
     transform: scale(0.95);
 }
 
-/* FullCalendar-specific styles are in FullCalendar.css */
+.fc{
+    height: 90%;
+}
+
+.fc-event-main-frame {
+    font-weight: 500;
+    color: black;
+}

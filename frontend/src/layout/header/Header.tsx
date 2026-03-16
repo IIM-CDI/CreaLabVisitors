@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Header.css";
-import ValidateEvents from "../../components/ValidateEvents/ValidateEvents";
+import Bouton from "../../components/Bouton/Bouton";
+import AdminModal from "../../components/AdminModal/AdminModal";
 
 interface HeaderInterface {
     setScannedCardId?: (id: string | null) => void;
@@ -28,9 +29,11 @@ const Header = ({ setScannedCardId, isAdmin, onEventChange }: HeaderInterface) =
 
     return (
         <header className="app_header">
-            <ValidateEvents isOpen={isModalOpen} onClose={closeModal} onEventChange={onEventChange} />
-            {isAdmin && <button className="modal_button" onClick={openModal}>Espace Admin - Validation des events</button>}
-            <button className="logout_button" onClick={handleLogout}> Déconnexion </button>
+            <AdminModal isOpen={isModalOpen} onClose={closeModal} onEventChange={onEventChange} />
+                <Bouton label="Deconnexion" component_type="primary" onClick={handleLogout} />
+            {isAdmin && (
+                <Bouton label="Espace Admin - Validation des events" component_type="primary" onClick={openModal} />
+            )}
         </header>
     );
 }

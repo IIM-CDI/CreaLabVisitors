@@ -1,0 +1,36 @@
+.bouton{
+    border: none;
+    width: 100%;
+    height: fit-content;
+    padding: 8px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.primary {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.secondary {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.accept {
+    background-color: var(--accept-color);
+    color: var(--light-text-color);
+}
+
+.cancel {
+    background-color: var(--cancel-color);
+    color: var(--light-text-color);
+}
+
+.bouton:hover {
+    filter: brightness(1.1);
+}
