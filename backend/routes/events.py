@@ -253,7 +253,6 @@ async def reject_event_via_email(event_id: str, token: str):
             logging.warning(f"Failed to send rejection notification email: {str(email_error)}")
         
         # Delete the event
-        result = supabase.table("CreaLab_events").delete().eq("id", event_id).execute()
         message = "Événement rejeté et supprimé avec succès"
         
         try:

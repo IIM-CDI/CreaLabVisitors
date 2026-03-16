@@ -6,7 +6,6 @@ on:
       - "frontend/**"
       - "eslint.config.mjs"
       - "package.json"
-      - "package-lock.json"
       - ".github/workflows/lint_front.yml"
   push:
     branches:
@@ -18,7 +17,6 @@ on:
       - "frontend/**"
       - "eslint.config.mjs"
       - "package.json"
-      - "package-lock.json"
       - ".github/workflows/lint_front.yml"
 
 jobs:
@@ -33,10 +31,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install root dependencies
-        run: npm ci
+        run: npm install
 
       - name: Lint frontend
         run: npx eslint "frontend/**/*.{js,mjs,cjs,ts,tsx}"
