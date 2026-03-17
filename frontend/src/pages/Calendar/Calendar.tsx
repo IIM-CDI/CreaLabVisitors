@@ -3,25 +3,24 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { EventContentArg } from "@fullcalendar/core";
 import frLocale from '@fullcalendar/core/locales/fr';
 import { io, Socket } from "socket.io-client";
 import "./CalendarComponent.css";
 import "./FullCalendar.css";
 import Sidebar from "../../layout/sidebar/Sidebar";
 import { useCalendarApi } from "../../hooks/useCalendarApi";
+import { useEventActions } from "../../hooks/useEventActions";
 import { calendarConfig } from "./constants";
 import { CalendarEvent, CalendarEventData, EventReceiveInfo } from "../../types/globalTypes";
 
 const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
     const { userData, events, getProfile, fetchEvents, saveEvent } = useCalendarApi();
-
-    const handleEventChange = useCallback(() => {
-        fetchEvents();
-    }, [fetchEvents]);
+    const { handleDelete } = useEventActions({ onEventRemoved: fetchEvents });
 
     useEffect(() => {
-        setRefreshEvents(() => handleEventChange);
-    }, [setRefreshEvents, handleEventChange]);
+        setRefreshEvents(() => fetchEvents);
+    }, [setRefreshEvents, fetchEvents]);
 
     useEffect(() => {
         if (card_id) getProfile(card_id);
@@ -70,7 +69,7 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
         };
     }, [card_id, fetchEvents]);
 
-    const handleEventReceive = (info: EventReceiveInfo) => {
+    const handleEventReceive = useCallback((info: EventReceiveInfo) => {
         const eventData: CalendarEventData = {
             id: info.event.id,
             title: info.event.title,
@@ -85,11 +84,35 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
             accepted: false
         };
         saveEvent(eventData);
-    };
+    }, [card_id, saveEvent]);
+
+    const renderEventContent = useCallback((eventInfo: EventContentArg) => {
+        const onDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handleDelete(eventInfo.event.id);
+        };
+
+        return (
+            <div className="calendar-event-content">
+                <button
+                    type="button"
+                    className="calendar-event-delete"
+                    aria-label="Supprimer l'événement"
+                    onClick={onDeleteClick}
+                >
+                    ×
+                </button>
+                <div className="calendar-event-text">
+                    {eventInfo.timeText && <div className="fc-event-time">{eventInfo.timeText}</div>}
+                    <div className="fc-event-title">{eventInfo.event.title}</div>
+                </div>
+            </div>
+        );
+    }, [handleDelete]);
 
     return (
         <>
-
             <Sidebar userData={userData} card_id={card_id} onEventSave={saveEvent} />
 
             <div className="calendar_container">
@@ -108,6 +131,7 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
                     droppable
                     allDaySlot={false}
                     eventReceive={handleEventReceive}
+                    eventContent={renderEventContent}
                 />
             </div>
         </>

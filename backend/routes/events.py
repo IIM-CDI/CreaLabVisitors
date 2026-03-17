@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import RedirectResponse
 from models import EventCreate
 from services.email_service import email_service
+from services.google_calendar_service import sync_validated_event_to_admin_calendar
 import jwt
 from datetime import datetime, timedelta
 import logging
@@ -60,7 +61,6 @@ def send_approval_email(event_data: dict) -> bool:
         return False
 
 def get_user_info_by_card_id(card_id: str) -> tuple:
-    """Get user email and name from card_id. Returns (email, name) tuple or (None, None) if not found."""
     try:
         result = supabase.table("CreaLab_visitors").select("email", "first_name", "last_name").eq("id_card", card_id).execute()
         if result.data and len(result.data) > 0:
@@ -76,7 +76,6 @@ def get_user_info_by_card_id(card_id: str) -> tuple:
         return None, None
 
 def send_notification_email(event_data: dict, action: str) -> bool:
-    """Send acceptance or rejection email to the event creator"""
     try:
         card_id = event_data.get("id_card")
         if not card_id:
@@ -99,6 +98,25 @@ def send_notification_email(event_data: dict, action: str) -> bool:
     except Exception as e:
         logging.error(f"Error sending notification email: {str(e)}")
         return False
+
+
+def sync_event_to_google_calendar(event_data: dict) -> None:
+    try:
+        event_payload = dict(event_data)
+
+        card_id = event_data.get("id_card")
+        if card_id:
+            creator_email, _ = get_user_info_by_card_id(card_id)
+            if creator_email:
+                event_payload["creator_email"] = creator_email
+
+        result = sync_validated_event_to_admin_calendar(event_payload)
+        if result.get("synced"):
+            logging.info(f"Google Calendar event created: {result.get('google_event_id')}")
+        else:
+            logging.info(f"Google Calendar sync skipped: {result.get('reason')}")
+    except Exception as calendar_error:
+        logging.warning(f"Failed to sync Google Calendar event: {str(calendar_error)}")
 
 
 @router.post("/events")
@@ -204,11 +222,11 @@ async def approve_event_via_email(event_id: str, token: str):
         if event_data.get("accepted"):
             message = "Événement déjà approuvé"
         else:
-            # Update event as accepted
             supabase.table("CreaLab_events").update({"accepted": True}).eq("id", event_id).execute()
             message = "Événement approuvé avec succès"
+
+            sync_event_to_google_calendar(event_data)
             
-            # Send notification email to the event creator
             try:
                 email_sent = send_notification_email(event_data, "accept")
                 logging.info(f"Acceptance notification email sent: {email_sent}")
@@ -238,21 +256,25 @@ async def reject_event_via_email(event_id: str, token: str):
     try:
         validate_email_token(token, "reject", event_id)
         
-        # Get event data before deletion for notification email
         event_check = supabase.table("CreaLab_events").select("*").eq("id", event_id).execute()
         if not event_check.data:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Événement {event_id} introuvable")
         
         event_data = event_check.data[0]
         
-        # Send notification email to the event creator before deletion
         try:
             email_sent = send_notification_email(event_data, "reject")
             logging.info(f"Rejection notification email sent: {email_sent}")
         except Exception as email_error:
             logging.warning(f"Failed to send rejection notification email: {str(email_error)}")
         
-        # Delete the event
+        result = supabase.table("CreaLab_events").delete().eq("id", event_id).execute()
+        if not result.data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Événement {event_id} introuvable"
+            )
+
         message = "Événement rejeté et supprimé avec succès"
         
         try:
@@ -276,7 +298,6 @@ async def accept_event(event_id: str):
     logging.info("Accepting event with ID: %s", event_id)
     
     try:
-        # Get event data first for notification email
         event_check = supabase.table("CreaLab_events").select("*").eq("id", event_id).execute()
         if not event_check.data:
             raise HTTPException(
@@ -286,13 +307,13 @@ async def accept_event(event_id: str):
         
         event_data = event_check.data[0]
         
-        # Update the event as accepted
         result = supabase.table("CreaLab_events").update({
             "accepted": True
         }).eq("id", event_id).execute()
         
         if result.data:
-            # Send notification email to the event creator
+            sync_event_to_google_calendar(event_data)
+
             try:
                 email_sent = send_notification_email(event_data, "accept")
                 logging.info(f"Acceptance notification email sent: {email_sent}")
@@ -324,7 +345,6 @@ async def delete_event(event_id: str):
     logging.info("Deleting event with ID: %s", event_id)
     
     try:
-        # Get event data before deletion for notification email
         event_check = supabase.table("CreaLab_events").select("*").eq("id", event_id).execute()
         if not event_check.data:
             raise HTTPException(
@@ -334,14 +354,12 @@ async def delete_event(event_id: str):
         
         event_data = event_check.data[0]
         
-        # Send notification email to the event creator before deletion
         try:
             email_sent = send_notification_email(event_data, "reject")
             logging.info(f"Rejection notification email sent: {email_sent}")
         except Exception as email_error:
             logging.warning(f"Failed to send rejection notification email: {str(email_error)}")
         
-        # Delete the event
         result = supabase.table("CreaLab_events").delete().eq("id", event_id).execute()
         
         if result.data:

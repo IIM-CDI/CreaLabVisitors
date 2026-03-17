@@ -31,7 +31,7 @@ fastapi_app.add_middleware(
 )
 
 latest_card = {"id": None, "ts": None, "role": None}
-SECRET_KEY = os.getenv("SECRET_KEY", "change_this_secret")  # Only for email tokens
+SECRET_KEY = os.getenv("SECRET_KEY", "change_this_secret")
 
 sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[FRONTEND_URL])
 

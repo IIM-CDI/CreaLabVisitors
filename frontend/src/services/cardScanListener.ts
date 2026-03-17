@@ -34,5 +34,4 @@ const initSocket = () => {
     });
 };
 
-// initialize socket listener immediately
 initSocket();

@@ -24,13 +24,22 @@ const CreateCustomEvent = ({ openModal, setOpenModal, currentUser, onEventSave }
     const [endDate, setEndDate] = useState(String(new Date(new Date().getTime() + (2 * 60 * 60 * 1000)).toISOString().split("T")[0]));
     const [endHour, setEndHour] = useState(String(new Date(new Date().getTime() + (2 * 60 * 60 * 1000)).toISOString().split("T")[1].slice(0, 5)));
     const [color, setColor] = useState("#000000");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleSubmit = () => {
         const start = new Date(`${startDate}T${startHour}`);
         const end = new Date(`${endDate}T${endHour}`);
+
+        if (end <= start) {
+            setErrorMessage("La fin de l'événement doit être après le début.");
+            return;
+        }
+
+        setErrorMessage("");
+
         const eventData: CalendarEventData = {
             id: Math.random().toString(36).substr(2, 9),
-            title,
+            title: title + ` - ${currentUser.first_name} ${currentUser.last_name}`,
             start,
             end,
             startStr: start.toISOString(),
@@ -87,6 +96,7 @@ const CreateCustomEvent = ({ openModal, setOpenModal, currentUser, onEventSave }
                 <FormDate label="Date de fin" value={endDate} onChange={(value) => setEndDate(value)} />
                 <FormHour label="Heure de fin" value={endHour} onChange={(value) => setEndHour(value)} />
                     </div>
+                {errorMessage && <p className="create_custom_event_error">{errorMessage}</p>}
                 <FormColor label="Couleur de l'événement" value={color} onChange={(value) => setColor(value)} />
                 <Bouton label="Enregistrer l'événement" component_type="primary" onClick={handleSubmit} />
             </form>

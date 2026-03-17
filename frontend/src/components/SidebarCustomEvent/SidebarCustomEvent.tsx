@@ -42,7 +42,7 @@ const SidebarCustomEvent = ({ userData }: SidebarCustomEventProps) => {
 
     return (
         <div className="sidebar_custom_event">
-            <p className="sidebar_custom_event_title">Custom Event Content</p>
+            <p className="sidebar_custom_event_title">Events prédéfinis</p>
             <div id="external-events">
                 {draggableEvents
                             .filter(event => event.visibility === 'all' || (event.visibility === 'staff' && userData?.role === 'staff'))

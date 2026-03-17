@@ -18,7 +18,7 @@ const SidebarCreateEvent = ({ userData, onEventSave }: CreateEventProps) => {
     return (
         <>
             <div className="sidebar_create_event">
-                <p className="sidebar_create_event_title">Evenement personnalisé</p>
+                <p className="sidebar_create_event_title">Event personnalisé</p>
                 <Bouton label="Créer un événement" component_type="primary" onClick={() => setOpenModal(true)} />
             </div>
             <CreateCustomEvent openModal={openModal} setOpenModal={setOpenModal} currentUser={userData} onEventSave={onEventSave} />

@@ -91,7 +91,6 @@ class EmailService:
         return self.send_email(admin_email, subject, html_content)
     
     def send_event_acceptance_email(self, event_data: Dict[str, Any], user_email: str, user_name: str) -> bool:
-        """Send email notification when an event is accepted"""
         html_template = self._load_template('event_accepted.html')
         
         html_content = html_template.render(
@@ -107,7 +106,6 @@ class EmailService:
         return self.send_email(user_email, subject, html_content)
     
     def send_event_rejection_email(self, event_data: Dict[str, Any], user_email: str, user_name: str) -> bool:
-        """Send email notification when an event is rejected"""
         html_template = self._load_template('event_rejected.html')
         
         html_content = html_template.render(

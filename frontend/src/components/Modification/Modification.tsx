@@ -63,32 +63,32 @@ const Modification = ({ userData, card_id, setModificationOpen }: ModificationPr
                 <h2>Modification des informations</h2>
                 <form className="modification_form" onSubmit={handleSubmit}>
                     <FormText
-                        label="prenom"
+                        label="Prénom"
                         value={prenom}
                         defaultValue={userData.first_name}
                         onChange={setPrenom}
                     />
                     <FormText
-                        label="nom"
+                        label="Nom"
                         value={nom}
                         defaultValue={userData.last_name}
                         onChange={setNom}
                     />
                     <FormEmail
-                        label="email"
+                        label="Email"
                         value={email}
                         defaultValue={userData.email}
                         onChange={setEmail}
                     />
                     <FormText
-                        label="role"
+                        label="Rôle"
                         value={role}
                         defaultValue={userData.role}
                         onChange={setRole}
                         readonly={true}
                     />
                     <FormText
-                        label="card_id"
+                        label="Card_id"
                         value={card_id}
                         defaultValue={userData.card_id}
                         onChange={() => {}}
