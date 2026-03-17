@@ -47,3 +47,10 @@
     display: flex;
     gap: 10px;
 }
+
+.create_custom_event_error {
+    margin: 0;
+    color: #c62828;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
