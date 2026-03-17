@@ -18,7 +18,6 @@ export const useModalManager = ({ isOpen, onClose, onEventChange }: UseModalMana
         }
     }, [handleClose]);
 
-    // Handle escape key and body scroll
     useEffect(() => {
         const handleEscapeKey = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {

@@ -25,14 +25,13 @@ def init_user_routes(db, card_data, frontend_url=None):
 def submit_data(request: Request, data: ProfileData):
     logging.info("Submitting profile for card: %s", data.card_id)
     
-    # Validate card scan
     origin = request.headers.get("origin") or request.client.host
     if FRONTEND_URL and FRONTEND_URL not in origin and origin != "http://localhost":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
     if latest_card.get("id") != data.card_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Carte non récemment scannée")
     ts = latest_card.get("ts")
-    if not ts or (datetime.utcnow() - ts).total_seconds() > 300:  # 5 minutes
+    if not ts or (datetime.utcnow() - ts).total_seconds() > 300:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Scan de carte expiré (5 minutes max)")
 
     latest_card["id"] = data.card_id
@@ -52,14 +51,13 @@ def submit_data(request: Request, data: ProfileData):
 def update_profile(request: Request, data: ProfileData):
     logging.info("Updating profile for card: %s", data.card_id)
     
-    # Validate card scan
     origin = request.headers.get("origin") or request.client.host
     if FRONTEND_URL and FRONTEND_URL not in origin and origin != "http://localhost":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
     if latest_card.get("id") != data.card_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Carte non récemment scannée")
     ts = latest_card.get("ts")
-    if not ts or (datetime.utcnow() - ts).total_seconds() > 300:  # 5 minutes
+    if not ts or (datetime.utcnow() - ts).total_seconds() > 300:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Scan de carte expiré (5 minutes max)")
 
     supabase.table("CreaLab_visitors").update({
@@ -73,14 +71,13 @@ def update_profile(request: Request, data: ProfileData):
 
 @router.get("/get-profile/{card_id}")
 def get_profile(request: Request, card_id: str):
-    # Validate card scan
     origin = request.headers.get("origin") or request.client.host
     if FRONTEND_URL and FRONTEND_URL not in origin and origin != "http://localhost":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
     if latest_card.get("id") != card_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Carte non récemment scannée")
     ts = latest_card.get("ts")
-    if not ts or (datetime.utcnow() - ts).total_seconds() > 300:  # 5 minutes
+    if not ts or (datetime.utcnow() - ts).total_seconds() > 300:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Scan de carte expiré (5 minutes max)")
 
     result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
