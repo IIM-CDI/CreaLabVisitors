@@ -6,6 +6,7 @@ from jinja2 import Template, Environment, FileSystemLoader
 from typing import Optional, Dict, Any
 import os
 import logging
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -50,6 +51,16 @@ class EmailService:
         except Exception as e:
             logger.error(f"Failed to load template {template_name}: {str(e)}")
             raise
+
+    def _format_datetime_for_email(self, raw_value: Any) -> str:
+        if not raw_value:
+            return "N/A"
+
+        try:
+            parsed = datetime.fromisoformat(str(raw_value).replace("Z", "+00:00"))
+            return parsed.strftime("%d/%m/%Y à %H:%M")
+        except ValueError:
+            return str(raw_value)
     
     def send_email(self, to_email: str, subject: str, html_content: str, text_content: Optional[str] = None) -> bool:
         if not all([self.smtp_username, self.smtp_password]):
@@ -73,14 +84,16 @@ class EmailService:
     
     def send_event_approval_email(self, event_data: Dict[str, Any], approve_url: str, reject_url: str) -> bool:
         admin_email = os.getenv("ADMIN_EMAIL", "admin@crealab.com")
+        formatted_start = self._format_datetime_for_email(event_data.get('startStr') or event_data.get('start'))
+        formatted_end = self._format_datetime_for_email(event_data.get('endStr') or event_data.get('end'))
         
         html_template = self._load_template('event_approval.html')
         
         html_content = html_template.render(
             event_title=event_data.get('title', 'N/A'),
             event_user=event_data.get('user', 'N/A'),
-            event_start=event_data.get('startStr', 'N/A'),
-            event_end=event_data.get('endStr', 'N/A'),
+            event_start=formatted_start,
+            event_end=formatted_end,
             event_duration=event_data.get('duration', 'N/A'),
             approve_url=approve_url,
             reject_url=reject_url
@@ -92,12 +105,14 @@ class EmailService:
     
     def send_event_acceptance_email(self, event_data: Dict[str, Any], user_email: str, user_name: str) -> bool:
         html_template = self._load_template('event_accepted.html')
+        formatted_start = self._format_datetime_for_email(event_data.get('startStr') or event_data.get('start'))
+        formatted_end = self._format_datetime_for_email(event_data.get('endStr') or event_data.get('end'))
         
         html_content = html_template.render(
             user_name=user_name,
             event_title=event_data.get('title', 'N/A'),
-            event_start=event_data.get('startStr', 'N/A'),
-            event_end=event_data.get('endStr', 'N/A'),
+            event_start=formatted_start,
+            event_end=formatted_end,
             event_duration=event_data.get('duration', 'N/A')
         )
         
@@ -107,12 +122,14 @@ class EmailService:
     
     def send_event_rejection_email(self, event_data: Dict[str, Any], user_email: str, user_name: str) -> bool:
         html_template = self._load_template('event_rejected.html')
+        formatted_start = self._format_datetime_for_email(event_data.get('startStr') or event_data.get('start'))
+        formatted_end = self._format_datetime_for_email(event_data.get('endStr') or event_data.get('end'))
         
         html_content = html_template.render(
             user_name=user_name,
             event_title=event_data.get('title', 'N/A'),
-            event_start=event_data.get('startStr', 'N/A'),
-            event_end=event_data.get('endStr', 'N/A'),
+            event_start=formatted_start,
+            event_end=formatted_end,
             event_duration=event_data.get('duration', 'N/A')
         )
         
