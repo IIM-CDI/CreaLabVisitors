@@ -1,0 +1,66 @@
+.confirm-delete-modal {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.confirm-delete-modal .modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.confirm-delete-modal .modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.confirm-delete-modal .modal-body {
+    padding: 20px;
+}
+
+.confirm-delete-modal .modal-body p {
+    margin: 12px 0;
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.5;
+}
+
+.confirm-delete-modal .modal-body strong {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.confirm-delete-modal .warning-text {
+    color: #dc2626;
+    font-size: 13px;
+    font-style: italic;
+}
+
+.confirm-delete-modal .modal-footer {
+    display: flex;
+    gap: 10px;
+    padding: 20px;
+    border-top: 1px solid #e5e7eb;
+    justify-content: flex-end;
+}
+
+.confirm-delete-modal .modal-footer button {
+    flex: 1;
+    max-width: 130px;
+}

@@ -13,10 +13,14 @@ import { useCalendarApi } from "../../hooks/useCalendarApi";
 import { useEventActions } from "../../hooks/useEventActions";
 import { calendarConfig } from "./constants";
 import { CalendarEvent, CalendarEventData, EventReceiveInfo } from "../../types/globalTypes";
+import ConfirmDeleteModal from "../../components/ConfirmDeleteModal/ConfirmDeleteModal";
 
 const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
     const { userData, events, getProfile, fetchEvents, saveEvent } = useCalendarApi();
     const { handleDelete } = useEventActions({ onEventRemoved: fetchEvents });
+    const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = React.useState(false);
+    const [deleteEventId, setDeleteEventId] = React.useState<string | null>(null);
+    const [deleteEventTitle, setDeleteEventTitle] = React.useState<string>("");
 
     useEffect(() => {
         setRefreshEvents(() => fetchEvents);
@@ -90,11 +94,14 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
         const onDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {
             event.preventDefault();
             event.stopPropagation();
-            handleDelete(eventInfo.event.id);
+            setDeleteEventId(eventInfo.event.id);
+            setDeleteEventTitle(eventInfo.event.title);
+            setIsDeleteConfirmOpen(true);
         };
 
         return (
             <div className="calendar-event-content">
+                {userData?.admin && (
                 <button
                     type="button"
                     className="calendar-event-delete"
@@ -103,13 +110,29 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
                 >
                     ×
                 </button>
+                )}
                 <div className="calendar-event-text">
                     {eventInfo.timeText && <div className="fc-event-time">{eventInfo.timeText}</div>}
                     <div className="fc-event-title">{eventInfo.event.title}</div>
                 </div>
             </div>
         );
-    }, [handleDelete]);
+    }, [userData?.admin]);
+
+    const handleConfirmDelete = async () => {
+        if (deleteEventId) {
+            await handleDelete(deleteEventId);
+            setIsDeleteConfirmOpen(false);
+            setDeleteEventId(null);
+            setDeleteEventTitle("");
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setIsDeleteConfirmOpen(false);
+        setDeleteEventId(null);
+        setDeleteEventTitle("");
+    };
 
     return (
         <>
@@ -134,6 +157,13 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
                     eventContent={renderEventContent}
                 />
             </div>
+
+            <ConfirmDeleteModal
+                isOpen={isDeleteConfirmOpen}
+                eventTitle={deleteEventTitle}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+            />
         </>
     );
 };
