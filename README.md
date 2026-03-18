@@ -1,69 +1,45 @@
 # CreaLabVisitors
 
-Une application complète de gestion des visiteurs et des réservations pour le CreaLab. Cette solution permet de suivre les visites, gérer les profils utilisateurs et administrer un système de réservation d'activités en temps réel.
+CreaLabVisitors est l'application de gestion des visiteurs et des réservations utilisée au CreaLab.
+Son objectif est simple : identifier rapidement les utilisateurs avec une carte, leur permettre de réserver des activités dans un calendrier partagé, et offrir aux administrateurs un flux de validation clair.
 
-## 🎯 Objectif
+## Ce que fait l'application
 
-CreaLabVisitors facilite la gestion quotidienne du CreaLab en automatisant l'accueil des visiteurs et la planification des activités. L'application utilise un système de cartes pour identifier rapidement les utilisateurs et leur donner accès à une interface de réservation intuitive.
+### 1) Accueil et accès des visiteurs
+- Un utilisateur scanne sa carte pour entrer dans l'application.
+- Si la carte est déjà connue, l'utilisateur arrive directement sur le calendrier.
+- Si la carte est nouvelle, l'application ouvre un formulaire d'inscription (prénom, nom, e-mail).
 
-## ✨ Fonctionnalités Principales
+### 2) Gestion du profil
+- Les utilisateurs peuvent mettre à jour leurs informations de profil depuis l'interface.
+- Cela permet de garder des coordonnées à jour pour les notifications et le suivi des réservations.
 
-### 🏷️ Gestion des Visiteurs
-- **Scan de cartes** : Identification instantanée des visiteurs
-- **Inscription automatique** : Création de profil pour les nouveaux visiteurs
-- **Modification de profil** : Mise à jour des informations personnelles
-- **Authentification sécurisée** : Système de tokens JWT
+### 3) Réservation d'activités
+- Les utilisateurs créent leurs réservations directement dans le calendrier.
+- Les activités apparaissent dans un planning clair, partagé avec tous les utilisateurs connectés.
+- Les nouvelles réservations sont créées en attente jusqu'à leur validation.
 
-### 📅 Système de Réservation
-- **Calendrier interactif** : Interface de réservation intuitive avec FullCalendar
-- **Activités prédéfinies** : Impression 3D, Peinture, Électronique, Cours
-- **Glisser-déposer** : Création facile de réservations
-- **Validation administrative** : Approbation des événements par les administrateurs
+### 4) Processus de validation admin
+- Les administrateurs voient les réservations en attente dans un espace de modération dédié.
+- Chaque demande peut être approuvée ou refusée.
+- Les administrateurs peuvent aussi valider depuis des liens d'action reçus par e-mail.
 
-### 🔄 Temps Réel
-- **Mises à jour instantanées** : Synchronisation en direct via Socket.IO
-- **Collaboration** : Plusieurs utilisateurs peuvent voir les changements simultanément
+### 5) Mises à jour en direct et notifications
+- Les changements du calendrier sont partagés en temps réel, pour que chacun voie immédiatement les mises à jour.
+- Des e-mails de notification sont envoyés aux étapes importantes (approbation/refus).
 
-### 📧 Notifications Email
-- **Approbation d'événements** : Emails automatiques aux administrateurs
-- **Liens d'action** : Validation/rejet direct depuis l'email
-- **Templates personnalisés** : Emails professionnels avec Jinja2
+## Rôles utilisateur
 
-## 🛠️ Technologies Utilisées
+- **Étudiant (rôle par défaut) :** peut s'inscrire, modifier son profil et créer des réservations.
+- **Admin :** dispose de toutes les permissions étudiant, plus la validation/le refus des réservations.
 
-### Backend (Python)
-- **FastAPI** : API REST moderne et performante
-- **Supabase** : Base de données PostgreSQL hébergée
-- **Socket.IO** : Communication temps réel
-- **PyJWT** : Authentification par tokens
-- **Jinja2** : Génération d'emails HTML
-- **PySerial** : Communication avec le lecteur de cartes
+## Stack technique (essentiel)
 
-### Frontend (React/TypeScript)
-- **React 18** : Interface utilisateur moderne
-- **TypeScript** : Développement type-safe
-- **FullCalendar** : Composant calendrier interactif
-- **Socket.IO Client** : Synchronisation temps réel
-- **CSS3** : Interface responsive et moderne
+- **Frontend :** React + TypeScript
+- **Backend :** Python (FastAPI)
+- **Base de données :** Supabase (PostgreSQL)
+- **Temps réel :** Socket.IO
 
-### Infrastructure
-- **Docker** : Conteneurisation (optionnelle)
-- **SMTP/Gmail** : Envoi d'emails
-- **CORS** : Sécurité cross-origin
+## Contexte du projet
 
-
-## 📖 Utilisation
-
-1. **Premier démarrage** : Accédez à `http://localhost:3000`
-2. **Scan de carte** : Utilisez le lecteur RFID ou l'interface de test
-3. **Inscription** : Les nouveaux utilisateurs créent leur profil
-4. **Réservation** : Glissez-déposez les activités sur le calendrier
-5. **Administration** : Les admins valident les événements via l'interface ou email
-
-## 📝 Licence
-
-Projet développé pour le CreaLab - IIM Digital School.
-
-## 🐛 Support
-
-Pour signaler un bug ou demander une fonctionnalité, ouvrez une [issue](https://github.com/IIM-CDI/CreaLabVisitors/issues).
+Ce projet a été développé pour le CreaLab de l'IIM Digital School.
