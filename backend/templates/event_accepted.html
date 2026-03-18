@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,36 +14,36 @@
             color: #333333;
             background-color: #f4f4f4;
         }
-        
+
         .email-container {
             max-width: 600px;
             margin: 20px auto;
             background-color: #ffffff;
             border: 1px solid #dddddd;
         }
-        
+
         .header {
             background-color: #059669;
             padding: 25px;
             text-align: center;
         }
-        
+
         .header h1 {
             margin: 0;
             color: #ffffff;
             font-size: 20px;
             font-weight: normal;
         }
-        
+
         .content {
             padding: 30px;
         }
-        
+
         .content p {
             margin: 0 0 16px 0;
             color: #555555;
         }
-        
+
         .event-info {
             background-color: #f0fdf4;
             border: 1px solid #bbf7d0;
@@ -50,23 +51,23 @@
             padding: 20px;
             margin: 20px 0;
         }
-        
+
         .event-info h2 {
             margin: 0 0 15px 0;
             color: #047857;
             font-size: 18px;
             font-weight: bold;
         }
-        
+
         .event-info p {
             margin: 5px 0;
             color: #374151;
         }
-        
+
         .event-info strong {
             color: #065f46;
         }
-        
+
         .success-message {
             background-color: #d1fae5;
             border: 1px solid #6ee7b7;
@@ -77,7 +78,7 @@
             text-align: center;
             border-radius: 4px;
         }
-        
+
         .info-note {
             background-color: #fef3c7;
             border: 1px solid #f59e0b;
@@ -86,7 +87,7 @@
             color: #92400e;
             font-size: 12px;
         }
-        
+
         .footer {
             background-color: #f9fafb;
             padding: 20px;
@@ -95,54 +96,55 @@
             color: #6b7280;
             font-size: 12px;
         }
-        
+
         .footer p {
             margin: 3px 0;
         }
-        
+
         @media only screen and (max-width: 600px) {
             .email-container {
                 margin: 10px;
                 border: none;
             }
+
             .content {
                 padding: 20px;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="email-container">
         <div class="header">
             <h1>✅ Événement Approuvé</h1>
         </div>
-        
+
         <div class="content">
             <p>Bonjour {{ user_name }},</p>
-            <p>Bonne nouvelle ! Votre événement a été <strong>approuvé</strong> par l'administration CreaLab.</p>
-            
+            <p>Bonne nouvelle ! Votre événement a été <strong>approuvé</strong>.</p>
+
             <div class="success-message">
-                Votre événement est maintenant confirmé et visible dans le calendrier !
+                Votre événement est confirmé et visible dans le calendrier !
             </div>
-            
+
             <div class="event-info">
                 <h2>{{ event_title }}</h2>
                 <p><strong>Début :</strong> {{ event_start }}</p>
                 <p><strong>Fin :</strong> {{ event_end }}</p>
                 <p><strong>Durée :</strong> {{ event_duration }}</p>
             </div>
-            
-            <p>Votre événement est maintenant visible pour tous les utilisateurs du CreaLab. Vous pouvez accéder au calendrier pour voir votre événement confirmé.</p>
-            
+
             <div class="info-note">
-                Si vous avez des questions concernant votre événement, n'hésitez pas à contacter l'administration.
+                Si vous avez des questions concernant votre événement, n'hésitez pas à contacter le bureau coding (302).
             </div>
         </div>
-        
+
         <div class="footer">
             <p><strong>Gestion des Événements CreaLab</strong></p>
             <p>Ceci est une notification automatisée. Veuillez ne pas répondre à cet email.</p>
         </div>
     </div>
 </body>
+
 </html>

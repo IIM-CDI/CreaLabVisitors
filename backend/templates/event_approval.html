@@ -1,8 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
+
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
         body {
             margin: 0;
@@ -13,36 +14,36 @@
             color: #333333;
             background-color: #f4f4f4;
         }
-        
+
         .email-container {
             max-width: 600px;
             margin: 20px auto;
             background-color: #ffffff;
             border: 1px solid #dddddd;
         }
-        
+
         .header {
             background-color: #d97706;
             padding: 25px;
             text-align: center;
         }
-        
+
         .header h1 {
             margin: 0;
             color: #ffffff;
             font-size: 20px;
             font-weight: normal;
         }
-        
+
         .content {
             padding: 30px;
         }
-        
+
         .content p {
             margin: 0 0 16px 0;
             color: #555555;
         }
-        
+
         .event-info {
             background-color: #fff7ed;
             border: 1px solid #fed7aa;
@@ -50,28 +51,28 @@
             padding: 20px;
             margin: 20px 0;
         }
-        
+
         .event-info h2 {
             margin: 0 0 15px 0;
             color: #b45309;
             font-size: 18px;
             font-weight: bold;
         }
-        
+
         .event-info p {
             margin: 5px 0;
             color: #374151;
         }
-        
+
         .event-info strong {
             color: #92400e;
         }
-        
+
         .action-buttons {
             text-align: center;
             margin: 30px 0;
         }
-        
+
         .action-buttons a {
             display: inline-block;
             margin: 5px 10px;
@@ -82,15 +83,15 @@
             font-weight: bold;
             border-radius: 4px;
         }
-        
+
         .btn-approve {
             background-color: #059669;
         }
-        
+
         .btn-reject {
             background-color: #dc2626;
         }
-        
+
         .info-note {
             background-color: #fef3c7;
             border: 1px solid #f59e0b;
@@ -99,7 +100,7 @@
             color: #92400e;
             font-size: 12px;
         }
-        
+
         .footer {
             background-color: #f9fafb;
             padding: 20px;
@@ -108,19 +109,21 @@
             color: #6b7280;
             font-size: 12px;
         }
-        
+
         .footer p {
             margin: 3px 0;
         }
-        
+
         @media only screen and (max-width: 600px) {
             .email-container {
                 margin: 10px;
                 border: none;
             }
+
             .content {
                 padding: 20px;
             }
+
             .action-buttons a {
                 display: block;
                 margin: 10px 0;
@@ -128,16 +131,20 @@
         }
     </style>
 </head>
+
 <body>
     <div class="email-container">
         <div class="header">
             <h1>Approbation d'Événement Requise</h1>
         </div>
-        
+
         <div class="content">
-            <p>Cher Administrateur,</p>
-            <p>Un nouvel événement a été soumis pour approbation. Veuillez examiner les détails de l'événement et approuver ou rejeter selon convenance.</p>
-            
+            <p>Wesh</p>
+            <p>
+                Un nouvel événement a été soumis pour approbation. Veuillez examiner
+                les détails de l'événement et approuver ou rejeter.
+            </p>
+
             <div class="event-info">
                 <h2>{{ event_title }}</h2>
                 <p><strong>Soumis par :</strong> {{ event_user }}</p>
@@ -145,21 +152,26 @@
                 <p><strong>Fin :</strong> {{ event_end }}</p>
                 <p><strong>Durée :</strong> {{ event_duration }}</p>
             </div>
-            
+
             <div class="action-buttons">
-                <a href="{{ approve_url }}" class="btn-approve">Approuver l'Événement</a>
+                <a href="{{ approve_url }}" class="btn-approve">Accepter l'Événement</a>
                 <a href="{{ reject_url }}" class="btn-reject">Rejeter l'Événement</a>
             </div>
-            
+
             <div class="info-note">
-                Note : Ces liens d'approbation expireront dans 7 jours. Les événements peuvent également être gérés via le panneau d'administration.
+                Note : Ces liens d'approbation expireront dans 7 jours. Les événements
+                peuvent également être gérés via le panneau.
             </div>
         </div>
-        
+
         <div class="footer">
             <p><strong>Gestion des Événements CreaLab</strong></p>
-            <p>Ceci est une notification automatisée. Veuillez ne pas répondre à cet email.</p>
+            <p>
+                Ceci est une notification automatisée. Veuillez ne pas répondre à cet
+                email.
+            </p>
         </div>
     </div>
 </body>
+
 </html>
