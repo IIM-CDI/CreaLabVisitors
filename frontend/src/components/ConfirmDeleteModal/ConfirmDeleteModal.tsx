@@ -23,7 +23,7 @@ const ConfirmDeleteModal = ({ isOpen, eventTitle, onConfirm, onCancel }: Confirm
             <div className="confirm-delete-modal" role="dialog" aria-modal="true" aria-label="Confirmation de suppression">
                 <div className="modal-body">
                     <p>
-                        Êtes-vous sûr de vouloir supprimer l'événement <strong>{eventTitle}</strong> ?
+                        Êtes-vous sûr de vouloir supprimer : <strong>{eventTitle}</strong> ?
                     </p>
                     <p className="warning-text">Cette action ne peut pas être annulée.</p>
                 </div>
