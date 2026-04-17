@@ -3,6 +3,7 @@ from models import ProfileData
 import logging
 import os
 from datetime import datetime
+from pydantic import BaseModel
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,11 +15,46 @@ latest_card = None
 FRONTEND_URL = None
 
 
+class LoginData(BaseModel):
+    email: str
+    password: str
+
+
 def init_user_routes(db, card_data, frontend_url=None):
     global supabase, latest_card, FRONTEND_URL
     supabase = db
     latest_card = card_data
     FRONTEND_URL = frontend_url or os.getenv("FRONTEND_URL")
+
+
+@router.post("/login")
+def login_user(request: Request, data: LoginData):
+    origin = request.headers.get("origin") or request.client.host
+    if FRONTEND_URL and FRONTEND_URL not in origin and origin != "http://localhost":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
+
+    result = (
+        supabase
+        .table("CreaLab_visitors")
+        .select("id_card,password")
+        .eq("email", data.email)
+        .execute()
+    )
+
+    if not result.data:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Identifiants invalides")
+
+    user = result.data[0]
+    if user.get("password") != data.password:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Identifiants invalides")
+
+    latest_card["id"] = user.get("id_card")
+    latest_card["ts"] = datetime.utcnow()
+
+    return {
+        "authenticated": True,
+        "card_id": user.get("id_card")
+    }
 
 
 @router.post("/submit")
@@ -41,6 +77,7 @@ def submit_data(request: Request, data: ProfileData):
         "first_name": data.first_name,
         "last_name": data.last_name,
         "email": data.email,
+        "password": data.password,
         "role": data.role.value,
         "admin": False
     }).execute()

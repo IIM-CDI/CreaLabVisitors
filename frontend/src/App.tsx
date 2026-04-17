@@ -3,6 +3,7 @@ import './App.css';
 import Header from './layout/header/Header';
 import Calendar from './pages/Calendar/Calendar';
 import Inscription from './components/Inscription/Inscription';
+import Connexion from './components/Connexion/Connexion';
 import { setCardScanCallback } from './services/cardScanListener';
 
 type AppState = 'waiting' | 'login' | 'inscription' | 'calendar';
@@ -75,6 +76,12 @@ function App() {
             <div className="login-container">
               <h2>Bienvenue au CreaLab</h2>
               <p>Veuillez scanner votre carte pour continuer.</p>
+            <Connexion
+              onLoginSuccess={(cardId: string) => {
+                setScannedCardId(cardId);
+                setAppState('calendar');
+              }}
+            />
             </div>
           </>
         );

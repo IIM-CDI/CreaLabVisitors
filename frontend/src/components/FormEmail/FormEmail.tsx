@@ -16,7 +16,7 @@ const FormEmail = ({ label, value, defaultValue, onChange }: FormEmailProps) => 
                 type="email"
                 name={label}
                 required
-                placeholder={`Enter ${label.toLowerCase()}`}
+                placeholder={`mail@exemple.com`}
                 className="form_email_input"
                 value={value}
                 defaultValue={defaultValue}
