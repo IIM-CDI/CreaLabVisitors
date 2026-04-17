@@ -20,6 +20,11 @@ class LoginData(BaseModel):
     password: str
 
 
+def is_authorized_school_email(email_value: str) -> bool:
+    normalized_email = email_value.strip().lower()
+    return normalized_email.endswith("@devinci.fr") or normalized_email.endswith("@edu.vinci.fr")
+
+
 def init_user_routes(db, card_data, frontend_url=None):
     global supabase, latest_card, FRONTEND_URL
     supabase = db
@@ -69,6 +74,11 @@ def submit_data(request: Request, data: ProfileData):
     ts = latest_card.get("ts")
     if not ts or (datetime.utcnow() - ts).total_seconds() > 300:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Scan de carte expiré (5 minutes max)")
+    if not is_authorized_school_email(data.email):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Adresse email invalide: domaines autorises @devinci.fr ou @edu.vinci.fr"
+        )
 
     latest_card["id"] = data.card_id
     latest_card["ts"] = None

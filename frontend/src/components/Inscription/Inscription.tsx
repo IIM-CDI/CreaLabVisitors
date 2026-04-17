@@ -13,6 +13,10 @@ interface InscriptionInterface {
 
 const Inscription = ({card_id}: InscriptionInterface) => {
     const { getApiUrl, getHeaders } = useApi();
+    const isAuthorizedSchoolEmail = (emailValue: string): boolean => {
+        const normalizedEmail = emailValue.trim().toLowerCase();
+        return normalizedEmail.endsWith("@devinci.fr") || normalizedEmail.endsWith("@edu.vinci.fr");
+    };
 
     
     const [prenom, setPrenom] = useState("");
@@ -20,9 +24,20 @@ const Inscription = ({card_id}: InscriptionInterface) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [formError, setFormError] = useState("");
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
+        setEmailError("");
+        setPasswordError("");
+        setFormError("");
+
+        if (!isAuthorizedSchoolEmail(email)) {
+            setEmailError("L'email doit se terminer par @devinci.fr ou @edu.vinci.fr.");
+            return;
+        }
 
         const headers = getHeaders();
         const apiUrl = getApiUrl();
@@ -54,7 +69,8 @@ const Inscription = ({card_id}: InscriptionInterface) => {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error: ${response.status}`);
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.detail || `HTTP error: ${response.status}`);
             }
 
             alert("Inscription réussie !");
@@ -67,11 +83,16 @@ const Inscription = ({card_id}: InscriptionInterface) => {
         } catch (error) {
             console.error("Error submitting profile:", error);
             if (error instanceof Error && error.message === "Passwords do not match") {
-                alert("Les mots de passe ne correspondent pas.");
+                setPasswordError("Les mots de passe ne correspondent pas.");
                 return;
             }
 
-            alert("L'inscription a échoué. Veuillez réessayer.");
+            if (error instanceof Error && error.message.includes("@devinci.fr ou @edu.vinci.fr")) {
+                setEmailError("L'email doit se terminer par @devinci.fr ou @edu.vinci.fr.");
+                return;
+            }
+
+            setFormError("L'inscription a echoue. Veuillez reessayer.");
         }
     }
 
@@ -94,20 +115,37 @@ const Inscription = ({card_id}: InscriptionInterface) => {
                 <FormEmail
                     label="Email"
                     value={email}
-                    onChange={setEmail}
+                    onChange={(value) => {
+                        setEmail(value);
+                        if (emailError) {
+                            setEmailError("");
+                        }
+                    }}
                 />
+                {emailError && <p className="inscription_error">{emailError}</p>}
                 <FormPassword
                     label="Mot de passe"
                     value={password}
-                    onChange={setPassword}
+                    onChange={(value) => {
+                        setPassword(value);
+                        if (passwordError) {
+                            setPasswordError("");
+                        }
+                    }}
                     placeholder="mot de passe"
                 />
                 <FormPassword
                     label="Confirmer le mot de passe"
                     value={confirmPassword}
-                    onChange={setConfirmPassword}
+                    onChange={(value) => {
+                        setConfirmPassword(value);
+                        if (passwordError) {
+                            setPasswordError("");
+                        }
+                    }}
                     placeholder="confirmer le mot de passe"
                 />
+                {passwordError && <p className="inscription_error">{passwordError}</p>}
                 <FormText
                     label="ID Carte"
                     value={card_id}
@@ -118,6 +156,7 @@ const Inscription = ({card_id}: InscriptionInterface) => {
                     value="etudiant"
                     readonly
                 />
+                {formError && <p className="inscription_error">{formError}</p>}
                 <Bouton type="submit" component_type="primary" label="S'inscrire" />
             </form>
         </div>
