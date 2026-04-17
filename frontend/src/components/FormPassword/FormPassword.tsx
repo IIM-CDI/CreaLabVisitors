@@ -1,7 +1,7 @@
 import React from "react";
-import "./FormText.css";
+import "./FormPassword.css";
 
-interface FormTextProps {
+interface FormPasswordProps {
     label: string;
     value: string;
     defaultValue?: string;
@@ -10,16 +10,16 @@ interface FormTextProps {
     onChange?: (value: string) => void;
 }
 
-const FormText = ({ label, value, defaultValue, readonly, placeholder, onChange }: FormTextProps) => {
+const FormPassword = ({ label, value, defaultValue, readonly, placeholder, onChange }: FormPasswordProps) => {
     return (
-        <div className="form_text">
-            <label className="form_text_label">{label}</label>
+        <div className="form_password">
+            <label className="form_password_label">{label}</label>
             <input
-                type="text"
+                type="password"
                 name={label}
                 required
                 placeholder={placeholder}
-                className="form_text_input"
+                className="form_password_input"
                 value={value}
                 defaultValue={defaultValue}
                 onChange={(e) => onChange?.(e.target.value)}
@@ -29,4 +29,4 @@ const FormText = ({ label, value, defaultValue, readonly, placeholder, onChange 
     );
 }
 
-export default FormText;
+export default FormPassword;

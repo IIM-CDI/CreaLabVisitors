@@ -7,5 +7,6 @@ class ProfileData(BaseModel):
     first_name: str
     last_name: str
     email: str
+    password: str
     role: UserRole
     admin: bool = False

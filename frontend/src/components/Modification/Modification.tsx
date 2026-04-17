@@ -66,12 +66,14 @@ const Modification = ({ userData, card_id, setModificationOpen }: ModificationPr
                         label="Prénom"
                         value={prenom}
                         defaultValue={userData.first_name}
+                        placeholder="prénom"
                         onChange={setPrenom}
                     />
                     <FormText
                         label="Nom"
                         value={nom}
                         defaultValue={userData.last_name}
+                        placeholder="nom"
                         onChange={setNom}
                     />
                     <FormEmail

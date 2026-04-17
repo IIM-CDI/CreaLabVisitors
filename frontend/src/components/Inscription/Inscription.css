@@ -35,3 +35,15 @@
     grid-column-start: 1;
     grid-column-end: 3;
 }
+
+.inscription_form .inscription_error {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    margin: -8px 0 0;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #fecaca;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 0.95rem;
+}
