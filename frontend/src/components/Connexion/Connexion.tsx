@@ -4,6 +4,7 @@ import FormEmail from "../FormEmail/FormEmail";
 import FormPassword from "../FormPassword/FormPassword";
 import Bouton from "../Bouton/Bouton";
 import { useApi } from "../../hooks/useApi";
+import { hashPassword } from "../../utils/auth";
 
 interface ConnexionProps {
 	onLoginSuccess: (cardId: string) => void;
@@ -16,12 +17,10 @@ const Connexion = ({ onLoginSuccess }: ConnexionProps) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 
-	const hashPassword = async (passwordValue: string): Promise<string> => {
-		const encoder = new TextEncoder();
-		const data = encoder.encode(passwordValue);
-		const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-		const hashArray = Array.from(new Uint8Array(hashBuffer));
-		return hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+	const clearError = () => {
+		if (errorMessage) {
+			setErrorMessage("");
+		}
 	};
 
 	const handleSubmit = async (event: React.FormEvent) => {
@@ -63,17 +62,14 @@ const Connexion = ({ onLoginSuccess }: ConnexionProps) => {
 
 	return (
 		<div className="connexion_container">
-            <h3> Connexion manuelle :</h3>
-            <br />
+			<h2>Connexion manuelle</h2>
 			<form className="connexion_form" onSubmit={handleSubmit}>
 				<FormEmail
 					label="Email"
 					value={email}
 					onChange={(value) => {
 						setEmail(value);
-						if (errorMessage) {
-							setErrorMessage("");
-						}
+						clearError();
 					}}
 				/>
 				<FormPassword
@@ -81,9 +77,7 @@ const Connexion = ({ onLoginSuccess }: ConnexionProps) => {
 					value={password}
 					onChange={(value) => {
 						setPassword(value);
-						if (errorMessage) {
-							setErrorMessage("");
-						}
+						clearError();
 					}}
 					placeholder="mot de passe"
 				/>

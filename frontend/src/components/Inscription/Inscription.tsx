@@ -5,6 +5,7 @@ import FormEmail from "../FormEmail/FormEmail";
 import FormPassword from "../FormPassword/FormPassword";
 import Bouton from "../Bouton/Bouton";
 import { useApi } from "../../hooks/useApi";
+import { hashPassword, isSchoolEmail } from "../../utils/auth";
 
 interface InscriptionInterface {
     card_id: string;
@@ -13,10 +14,6 @@ interface InscriptionInterface {
 
 const Inscription = ({card_id}: InscriptionInterface) => {
     const { getApiUrl, getHeaders } = useApi();
-    const isAuthorizedSchoolEmail = (emailValue: string): boolean => {
-        const normalizedEmail = emailValue.trim().toLowerCase();
-        return normalizedEmail.endsWith("@devinci.fr") || normalizedEmail.endsWith("@edu.vinci.fr");
-    };
 
     
     const [prenom, setPrenom] = useState("");
@@ -34,25 +31,18 @@ const Inscription = ({card_id}: InscriptionInterface) => {
         setPasswordError("");
         setFormError("");
 
-        if (!isAuthorizedSchoolEmail(email)) {
+        if (!isSchoolEmail(email)) {
             setEmailError("L'email doit se terminer par @devinci.fr ou @edu.vinci.fr.");
             return;
         }
 
         const headers = getHeaders();
         const apiUrl = getApiUrl();
-        const hashPassword = async (password: string): Promise<string> => {
+
+        try {
             if(password !== confirmPassword) {
                 throw new Error("Passwords do not match");
             }
-            const encoder = new TextEncoder();
-            const data = encoder.encode(password);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        };
-
-        try {
             const hashedPassword = await hashPassword(String(password));
 
             const response = await fetch(`${apiUrl}/submit`, {

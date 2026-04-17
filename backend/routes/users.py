@@ -5,6 +5,7 @@ import os
 from datetime import datetime
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from utils.auth import is_school_email, validate_card_context, validate_origin
 
 load_dotenv()
 
@@ -20,11 +21,6 @@ class LoginData(BaseModel):
     password: str
 
 
-def is_authorized_school_email(email_value: str) -> bool:
-    normalized_email = email_value.strip().lower()
-    return normalized_email.endswith("@devinci.fr") or normalized_email.endswith("@edu.vinci.fr")
-
-
 def init_user_routes(db, card_data, frontend_url=None):
     global supabase, latest_card, FRONTEND_URL
     supabase = db
@@ -34,9 +30,7 @@ def init_user_routes(db, card_data, frontend_url=None):
 
 @router.post("/login")
 def login_user(request: Request, data: LoginData):
-    origin = request.headers.get("origin") or request.client.host
-    if FRONTEND_URL and FRONTEND_URL not in origin and origin != "http://localhost":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
+    validate_origin(request, FRONTEND_URL)
 
     result = (
         supabase
@@ -65,16 +59,9 @@ def login_user(request: Request, data: LoginData):
 @router.post("/submit")
 def submit_data(request: Request, data: ProfileData):
     logging.info("Submitting profile for card: %s", data.card_id)
-    
-    origin = request.headers.get("origin") or request.client.host
-    if FRONTEND_URL and FRONTEND_URL not in origin and origin != "http://localhost":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
-    if latest_card.get("id") != data.card_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Carte non récemment scannée")
-    ts = latest_card.get("ts")
-    if not ts or (datetime.utcnow() - ts).total_seconds() > 300:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Scan de carte expiré (5 minutes max)")
-    if not is_authorized_school_email(data.email):
+    validate_origin(request, FRONTEND_URL)
+    validate_card_context(latest_card, data.card_id)
+    if not is_school_email(data.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Adresse email invalide: domaines autorises @devinci.fr ou @edu.vinci.fr"
@@ -97,15 +84,8 @@ def submit_data(request: Request, data: ProfileData):
 @router.post("/update-profile")
 def update_profile(request: Request, data: ProfileData):
     logging.info("Updating profile for card: %s", data.card_id)
-    
-    origin = request.headers.get("origin") or request.client.host
-    if FRONTEND_URL and FRONTEND_URL not in origin and origin != "http://localhost":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
-    if latest_card.get("id") != data.card_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Carte non récemment scannée")
-    ts = latest_card.get("ts")
-    if not ts or (datetime.utcnow() - ts).total_seconds() > 300:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Scan de carte expiré (5 minutes max)")
+    validate_origin(request, FRONTEND_URL)
+    validate_card_context(latest_card, data.card_id)
 
     supabase.table("CreaLab_visitors").update({
         "first_name": data.first_name,
@@ -118,14 +98,8 @@ def update_profile(request: Request, data: ProfileData):
 
 @router.get("/get-profile/{card_id}")
 def get_profile(request: Request, card_id: str):
-    origin = request.headers.get("origin") or request.client.host
-    if FRONTEND_URL and FRONTEND_URL not in origin and origin != "http://localhost":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
-    if latest_card.get("id") != card_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Carte non récemment scannée")
-    ts = latest_card.get("ts")
-    if not ts or (datetime.utcnow() - ts).total_seconds() > 300:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Scan de carte expiré (5 minutes max)")
+    validate_origin(request, FRONTEND_URL)
+    validate_card_context(latest_card, card_id)
 
     result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
     if len(result.data) > 0:

@@ -1,0 +1,49 @@
+.App {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-content {
+  height: calc(100vh - 60px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.background {
+  background: url('../public/Parc.jpg') no-repeat center fixed;
+  background-size: cover;
+  position: fixed;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: blur(3px);
+}
+
+.login-container, .waiting-container {
+  text-align: center;
+  width: 40%;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.login-container h2, .waiting-container h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.login-container p, .waiting-container p {
+  font-size: 16px;
+  color: #666;
+}
+.calendar-with-connexion {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+}
