@@ -13,7 +13,7 @@ router = APIRouter()
 
 supabase = None
 latest_card = None
-FRONTEND_URL = None
+FRONTEND_URLS = None
 
 
 class LoginData(BaseModel):
@@ -22,15 +22,18 @@ class LoginData(BaseModel):
 
 
 def init_user_routes(db, card_data, frontend_url=None):
-    global supabase, latest_card, FRONTEND_URL
+    global supabase, latest_card, FRONTEND_URLS
     supabase = db
     latest_card = card_data
-    FRONTEND_URL = frontend_url or os.getenv("FRONTEND_URL")
+    FRONTEND_URLS = frontend_url or [
+        os.getenv("FRONTEND_URL"),
+        os.getenv("FRONTEND_URL_DEPLOYED")
+    ]
 
 
 @router.post("/login")
 def login_user(request: Request, data: LoginData):
-    validate_origin(request, FRONTEND_URL)
+    validate_origin(request, FRONTEND_URLS)
 
     result = (
         supabase
@@ -59,7 +62,7 @@ def login_user(request: Request, data: LoginData):
 @router.post("/submit")
 def submit_data(request: Request, data: ProfileData):
     logging.info("Submitting profile for card: %s", data.card_id)
-    validate_origin(request, FRONTEND_URL)
+    validate_origin(request, FRONTEND_URLS)
     validate_card_context(latest_card, data.card_id)
     if not is_school_email(data.email):
         raise HTTPException(
@@ -84,7 +87,7 @@ def submit_data(request: Request, data: ProfileData):
 @router.post("/update-profile")
 def update_profile(request: Request, data: ProfileData):
     logging.info("Updating profile for card: %s", data.card_id)
-    validate_origin(request, FRONTEND_URL)
+    validate_origin(request, FRONTEND_URLS)
     validate_card_context(latest_card, data.card_id)
 
     supabase.table("CreaLab_visitors").update({
@@ -98,7 +101,7 @@ def update_profile(request: Request, data: ProfileData):
 
 @router.get("/get-profile/{card_id}")
 def get_profile(request: Request, card_id: str):
-    validate_origin(request, FRONTEND_URL)
+    validate_origin(request, FRONTEND_URLS)
     validate_card_context(latest_card, card_id)
 
     result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()

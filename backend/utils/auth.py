@@ -4,12 +4,25 @@ from datetime import datetime
 ALLOWED_SCHOOL_EMAIL_DOMAINS = ("@devinci.fr", "@edu.vinci.fr")
 
 
-def validate_origin(request, frontend_url=None):
-    origin = request.headers.get("origin") or request.client.host
-    if frontend_url and frontend_url not in origin and origin != "http://localhost":
-        from fastapi import HTTPException, status
+def _normalize_origin(value: str) -> str:
+    return value.rstrip("/")
 
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
+
+def validate_origin(request, frontend_urls=None):
+    origin = request.headers.get("origin")
+    if not origin:
+        return
+
+    if frontend_urls and isinstance(frontend_urls, str):
+        frontend_urls = [frontend_urls]
+
+    if frontend_urls:
+        normalized_origin = _normalize_origin(origin)
+        allowed_origins = {_normalize_origin(url) for url in frontend_urls if url}
+        if normalized_origin not in allowed_origins and normalized_origin != "http://localhost":
+            from fastapi import HTTPException, status
+
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origine non autorisée")
 
 
 def validate_card_context(latest_card, card_id: str, max_age_seconds: int = 300):

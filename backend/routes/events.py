@@ -24,7 +24,10 @@ def init_event_routes(db, socket_io=None, secret_key=None, frontend_url=None):
     supabase = db
     sio = socket_io
     EMAIL_TOKEN_SECRET = secret_key + "_email_salt" if secret_key else os.getenv("SECRET_KEY", "change_this_secret") + "_email_salt"
-    FRONTEND_URL = frontend_url or os.getenv("FRONTEND_URL")
+    if isinstance(frontend_url, (list, tuple)):
+        FRONTEND_URL = os.getenv("FRONTEND_URL_DEPLOYED") or (frontend_url[0] if frontend_url else None)
+    else:
+        FRONTEND_URL = frontend_url or os.getenv("FRONTEND_URL_DEPLOYED") or os.getenv("FRONTEND_URL")
     BACKEND_URL = os.getenv("BACKEND_URL")
 
 def generate_email_token(event_id: str, action: str, admin_email: str = "admin@crealab.com", expires_days: int = 7) -> str:

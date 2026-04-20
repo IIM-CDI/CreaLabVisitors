@@ -21,10 +21,14 @@ supabase = create_client(
 )
 
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
+FRONTEND_URL_DEPLOYED = os.getenv("FRONTEND_URL_DEPLOYED")
+ALLOWED_FRONTEND_ORIGINS = [FRONTEND_URL]
+if FRONTEND_URL_DEPLOYED and FRONTEND_URL_DEPLOYED not in ALLOWED_FRONTEND_ORIGINS:
+    ALLOWED_FRONTEND_ORIGINS.append(FRONTEND_URL_DEPLOYED)
 
 fastapi_app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL],
+    allow_origins=ALLOWED_FRONTEND_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -33,11 +37,11 @@ fastapi_app.add_middleware(
 latest_card = {"id": None, "ts": None, "role": None}
 SECRET_KEY = os.getenv("SECRET_KEY", "change_this_secret")
 
-sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=[FRONTEND_URL])
+sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=ALLOWED_FRONTEND_ORIGINS)
 
-init_card_routes(supabase, latest_card, sio, FRONTEND_URL)
-init_user_routes(supabase, latest_card, FRONTEND_URL)
-init_event_routes(supabase, sio, SECRET_KEY, FRONTEND_URL)
+init_card_routes(supabase, latest_card, sio, ALLOWED_FRONTEND_ORIGINS)
+init_user_routes(supabase, latest_card, ALLOWED_FRONTEND_ORIGINS)
+init_event_routes(supabase, sio, SECRET_KEY, ALLOWED_FRONTEND_ORIGINS)
 
 fastapi_app.include_router(health_router)
 fastapi_app.include_router(cards_router)
