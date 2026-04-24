@@ -5,8 +5,11 @@ import Calendar from './pages/Calendar/Calendar';
 import Inscription from './components/Inscription/Inscription';
 import Connexion from './components/Connexion/Connexion';
 import { setCardScanCallback } from './services/cardScanListener';
+import Bouton from './components/Bouton/Bouton';
 
-type AppState = 'waiting' | 'login' | 'inscription' | 'calendar';
+type AppState = 'waiting' | 'login' | 'inscription' | 'calendar' | 'cardNotFound' | 'linkLogin';
+
+const NO_CARD_PLACEHOLDER = '000000';
 
 function App() {
   const [scannedCardId, setScannedCardId] = useState<string | null>(null);
@@ -31,7 +34,7 @@ function App() {
         if (data.exists) {
           setAppState('calendar');
         } else {
-          setAppState('inscription');
+          setAppState('cardNotFound');
         }
       } catch (error) {
         console.error('Error checking existing card:', error);
@@ -58,8 +61,42 @@ function App() {
         );
       
       case 'inscription':
-        return scannedCardId ? 
-            <> <div className="background" /> <Inscription card_id={scannedCardId} /> </>: null;
+        return (
+          <>
+            <div className="background" />
+            <Inscription card_id={scannedCardId || NO_CARD_PLACEHOLDER} />
+          </>
+        );
+
+      case 'cardNotFound':
+        return (
+          <>
+            <div className="background" />
+            <div className="login-container">
+              <h2>Carte inconnue</h2>
+              <p>Cette carte n&apos;est pas encore associée.</p>
+              <p>Avez-vous déjà un compte ?</p>
+              <div className="auth-choice-actions">
+                <Bouton onClick={() => setAppState('linkLogin')} label="Oui, j&apos;ai déjà un compte" />
+                <Bouton onClick={() => setAppState('inscription')} component_type="secondary" label="Non, créer un compte" />
+              </div>
+            </div>
+          </>
+        );
+      case 'linkLogin':
+        return (
+          <>
+            <div className="background" />
+            <Connexion
+              scannedCardId={scannedCardId}
+              onLoginSuccess={(cardId: string) => {
+                setScannedCardId(cardId);
+                setAppState('calendar');
+              }}
+              onBack={() => setAppState('cardNotFound')}
+            />
+          </>
+        );
       
       case 'calendar':
         return (
@@ -73,15 +110,16 @@ function App() {
         return (
           <>
             <div className="background" />
-            <div className="login-container">
-              <h2>Bienvenue au CreaLab</h2>
-              <p>Veuillez scanner votre carte pour continuer.</p>
-            <Connexion
-              onLoginSuccess={(cardId: string) => {
-                setScannedCardId(cardId);
-                setAppState('calendar');
-              }}
-            />
+              <div className="login-container">
+                <h2>Bienvenue au CreaLab</h2>
+              <Connexion
+                onLoginSuccess={(cardId: string) => {
+                  setScannedCardId(cardId);
+                  setAppState('calendar');
+                }}
+              />
+              <p>Vous n&apos;êtes pas encore inscrit ?</p>
+              <Bouton onClick={() => setAppState('inscription')} label="S'inscrire" />
             </div>
           </>
         );

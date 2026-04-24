@@ -25,22 +25,47 @@
 }
 
 .login-container, .waiting-container {
+  display: flex;
+  flex-direction: column;
   text-align: center;
   width: 40%;
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
+  gap: 16px;
 }
 
 .login-container h2, .waiting-container h2 {
-  margin-bottom: 20px;
+  font-size: 2em;
   color: #333;
 }
 
 .login-container p, .waiting-container p {
-  font-size: 16px;
-  color: #666;
+  font-size: 1.25em;
+  font-weight: 500;
+  margin-top: 12px;
+  color: #333;
 }
+
+.auth-choice-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.auth-choice-actions .bouton {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .login-container,
+  .waiting-container {
+    width: calc(100vw - 48px);
+  }
+}
+
 .calendar-with-connexion {
   display: flex;
   height: 100%;

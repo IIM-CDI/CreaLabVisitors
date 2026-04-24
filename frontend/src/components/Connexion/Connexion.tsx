@@ -8,9 +8,11 @@ import { hashPassword } from "../../utils/auth";
 
 interface ConnexionProps {
 	onLoginSuccess: (cardId: string) => void;
+	scannedCardId?: string | null;
+	onBack?: () => void;
 }
 
-const Connexion = ({ onLoginSuccess }: ConnexionProps) => {
+const Connexion = ({ onLoginSuccess, scannedCardId, onBack }: ConnexionProps) => {
 	const { getApiUrl, getHeaders } = useApi();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -39,6 +41,7 @@ const Connexion = ({ onLoginSuccess }: ConnexionProps) => {
 				body: JSON.stringify({
 					email: String(email),
 					password: hashedPassword,
+					scanned_card_id: scannedCardId || null,
 				}),
 			});
 
@@ -54,7 +57,11 @@ const Connexion = ({ onLoginSuccess }: ConnexionProps) => {
 			onLoginSuccess(data.card_id);
 		} catch (error) {
 			console.error("Error during login:", error);
-			setErrorMessage("Connexion échouee. Verifiez vos identifiants.");
+			if (error instanceof Error && error.message) {
+				setErrorMessage(error.message);
+			} else {
+				setErrorMessage("Connexion échouee. Verifiez vos identifiants.");
+			}
 		} finally {
 			setIsLoading(false);
 		}
@@ -62,7 +69,8 @@ const Connexion = ({ onLoginSuccess }: ConnexionProps) => {
 
 	return (
 		<div className="connexion_container">
-			<h2>Connexion manuelle</h2>
+			<h2>{scannedCardId ? "Connexion et association de carte" : "Connexion manuelle"}</h2>
+			{scannedCardId && <p className="connexion_info">Carte scannée : {scannedCardId}</p>}
 			<form className="connexion_form" onSubmit={handleSubmit}>
 				<FormEmail
 					label="Email"
@@ -88,6 +96,15 @@ const Connexion = ({ onLoginSuccess }: ConnexionProps) => {
 					label={isLoading ? "Connexion..." : "Se connecter"}
 					disabled={isLoading}
 				/>
+				{onBack && (
+					<Bouton
+						type="button"
+						component_type="secondary"
+						label="Retour"
+						onClick={onBack}
+						disabled={isLoading}
+					/>
+				)}
 			</form>
 		</div>
 	);
