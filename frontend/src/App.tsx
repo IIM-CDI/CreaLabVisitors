@@ -83,7 +83,6 @@ function App() {
             </div>
           </>
         );
-
       case 'linkLogin':
         return (
           <>
@@ -119,7 +118,7 @@ function App() {
                   setAppState('calendar');
                 }}
               />
-              <p>Vous n'êtes pas encore inscrit ?</p>
+              <p>Vous n&apos;êtes pas encore inscrit ?</p>
               <Bouton onClick={() => setAppState('inscription')} label="S'inscrire" />
             </div>
           </>
