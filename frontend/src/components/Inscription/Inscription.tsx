@@ -11,6 +11,7 @@ interface InscriptionInterface {
     card_id: string;
 };
 
+const NO_CARD_PLACEHOLDER = "000000";
 
 const Inscription = ({card_id}: InscriptionInterface) => {
     const { getApiUrl, getHeaders } = useApi();
@@ -82,13 +83,22 @@ const Inscription = ({card_id}: InscriptionInterface) => {
                 return;
             }
 
-            setFormError("L'inscription a echoue. Veuillez reessayer.");
+            if (error instanceof Error && error.message) {
+                setFormError(error.message);
+            } else {
+                setFormError("L'inscription a echoue. Veuillez reessayer.");
+            }
         }
     }
 
     return (
         <div className="inscription_container">
             <h2>Formulaire d&apos;Inscription</h2>
+            {card_id === NO_CARD_PLACEHOLDER && (
+                <p className="inscription_info">
+                    Aucun scan de carte detecte. Un identifiant provisoire sera utilise jusqu&apos;a l&apos;association d&apos;une carte.
+                </p>
+            )}
             <form className="inscription_form" onSubmit={handleSubmit}>
                 <FormText
                     label="Prénom"
