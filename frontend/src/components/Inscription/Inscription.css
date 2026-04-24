@@ -20,6 +20,13 @@
     gap: 20px;
 }
 
+.inscription_info {
+    margin: 0 0 16px;
+    color: #4b5563;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
 .inscription_form label {
     display: flex;
     flex-direction: column;
