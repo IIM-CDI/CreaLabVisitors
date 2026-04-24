@@ -118,8 +118,10 @@ function App() {
                   setAppState('calendar');
                 }}
               />
-              <p>Vous n&apos;êtes pas encore inscrit ?</p>
-              <Bouton onClick={() => setAppState('inscription')} label="S'inscrire" />
+              <div className='inscription-container'>
+                <p>Vous n&apos;êtes pas encore inscrit ?</p>
+                <Bouton onClick={() => setAppState('inscription')} label="S'inscrire" />
+              </div>
             </div>
           </>
         );
