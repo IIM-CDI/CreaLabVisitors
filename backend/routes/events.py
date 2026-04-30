@@ -80,14 +80,20 @@ def get_user_info_by_card_id(card_id: str) -> tuple:
 
 def send_notification_email(event_data: dict, action: str) -> bool:
     try:
-        card_id = event_data.get("id_card")
-        if not card_id:
-            logging.warning("No card_id found for event, cannot send notification email")
-            return False
-            
-        user_email, user_name = get_user_info_by_card_id(card_id)
+        # Try to get user email from event data first
+        user_email = event_data.get("email")
+        user_name = event_data.get("user", "Utilisateur")
+        
+        # If email not in event data, try to get it from card_id (fallback)
         if not user_email:
-            logging.warning(f"No email found for card {card_id}, cannot send notification email")
+            card_id = event_data.get("id_card")
+            if card_id:
+                user_email, name = get_user_info_by_card_id(card_id)
+                if name:
+                    user_name = name
+        
+        if not user_email:
+            logging.warning("No email found for event, cannot send notification email")
             return False
         
         if action == "accept":
@@ -107,11 +113,18 @@ def sync_event_to_google_calendar(event_data: dict) -> None:
     try:
         event_payload = dict(event_data)
 
-        card_id = event_data.get("id_card")
-        if card_id:
-            creator_email, _ = get_user_info_by_card_id(card_id)
-            if creator_email:
-                event_payload["creator_email"] = creator_email
+        # Try to get creator email from event data first
+        creator_email = event_data.get("email")
+        
+        # If email not in event data, try to get it from card_id (fallback)
+        if not creator_email:
+            card_id = event_data.get("id_card")
+            if card_id:
+                creator_email, _ = get_user_info_by_card_id(card_id)
+        
+        # Add creator email to event payload if available
+        if creator_email:
+            event_payload["creator_email"] = creator_email
 
         result = sync_validated_event_to_admin_calendar(event_payload)
         if result.get("synced"):

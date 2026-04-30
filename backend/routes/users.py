@@ -137,32 +137,31 @@ def submit_data(request: Request, data: ProfileData):
 
 @router.post("/update-profile")
 def update_profile(request: Request, data: ProfileData):
-    logging.info("Updating profile for card: %s", data.card_id)
+    logging.info("Updating profile for email: %s", data.email)
     validate_origin(request, FRONTEND_URLS)
     
-    # Don't require strict card validation - user should be able to update profile without Card scan
-    if not data.card_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="card_id is required to update profile"
-        )
-
+    # Use email as primary identifier for updating profile
+    # This works whether user logged in with card or without
     supabase.table("CreaLab_visitors").update({
         "first_name": data.first_name,
         "last_name": data.last_name,
-        "email": data.email,
         "role": data.role.value
-    }).eq("id_card", data.card_id).execute()
-    return {"message": f"Profil pour la carte {data.card_id} mis à jour avec succès"}
+    }).eq("email", data.email).execute()
+    
+    return {"message": f"Profil pour {data.email} mis à jour avec succès"}
 
 
 @router.get("/get-profile/{card_id}")
 def get_profile(request: Request, card_id: str):
     validate_origin(request, FRONTEND_URLS)
     
-    # Don't require strict card validation - user should be able to get profile without Card scan
+    # Try to get profile by card_id first (for backward compatibility)
     result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
     if len(result.data) > 0:
         return {"found": True, "data": result.data[0]}
     else:
+        # Fallback: also search by email (card_id could be an email in some cases)
+        result = supabase.table("CreaLab_visitors").select("*").eq("email", card_id).execute()
+        if len(result.data) > 0:
+            return {"found": True, "data": result.data[0]}
         return {"found": False}

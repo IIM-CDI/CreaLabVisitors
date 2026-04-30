@@ -25,6 +25,7 @@ export interface CalendarEventData {
     id: string;
     title: string;
     user: string;
+    email?: string;
     start: Date;
     startStr: string;
     end: Date;
@@ -44,6 +45,7 @@ export interface FormattedCalendarEvent {
     borderColor: string;
     extendedProps: {
         user: string;
+        email?: string;
         duration: string;
         id_card?: string;
         accepted: boolean;
@@ -54,6 +56,7 @@ export interface BackendEvent {
     id: string;
     title: string;
     user: string;
+    email?: string;
     start: string;
     startStr: string;
     end: string;

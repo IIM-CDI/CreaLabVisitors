@@ -7,6 +7,7 @@ class EventCreate(BaseModel):
     id: str
     title: str
     user: str
+    email: Optional[str] = None
     start: datetime
     startStr: str
     end: datetime

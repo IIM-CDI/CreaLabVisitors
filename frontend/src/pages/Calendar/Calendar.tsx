@@ -78,6 +78,7 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
             id: info.event.id,
             title: info.event.title,
             user: (info.event.extendedProps.user as string) || 'Unknown',
+            email: userData?.email,
             start: info.event.start || new Date(),
             startStr: info.event.startStr,
             end: info.event.end || info.event.start || new Date(),
@@ -88,7 +89,7 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
             accepted: false
         };
         saveEvent(eventData);
-    }, [card_id, saveEvent]);
+    }, [card_id, userData?.email, saveEvent]);
 
     const renderEventContent = useCallback((eventInfo: EventContentArg) => {
         const onDeleteClick = (event: React.MouseEvent<HTMLButtonElement>) => {

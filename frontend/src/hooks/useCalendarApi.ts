@@ -47,6 +47,7 @@ export const useCalendarApi = () => {
                         borderColor: displayColor,
                         extendedProps: {
                             user: event.user,
+                            email: event.email,
                             duration: event.duration,
                             id_card: event.id_card,
                             accepted: event.accepted

@@ -47,7 +47,8 @@ const CreateCustomEvent = ({ openModal, setOpenModal, currentUser, onEventSave }
             duration: String(end.getTime() - start.getTime()),
             color,
             user: currentUser.first_name + " " + currentUser.last_name,
-            id_card: currentUser.id_card || "",
+            email: currentUser.email,
+            id_card: currentUser.id_card,
             accepted: false,
         };
 
