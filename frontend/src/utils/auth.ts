@@ -1,4 +1,4 @@
-const ALLOWED_SCHOOL_EMAIL_DOMAINS = ["@devinci.fr", "@edu.vinci.fr"] as const;
+const ALLOWED_SCHOOL_EMAIL_DOMAINS = ["@devinci.fr", "@edu.devinci.fr"] as const;
 
 export const isSchoolEmail = (emailValue: string): boolean => {
     const normalizedEmail = emailValue.trim().toLowerCase();

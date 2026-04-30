@@ -33,7 +33,7 @@ const Inscription = ({card_id}: InscriptionInterface) => {
         setFormError("");
 
         if (!isSchoolEmail(email)) {
-            setEmailError("L'email doit se terminer par @devinci.fr ou @edu.vinci.fr.");
+            setEmailError("L'email doit se terminer par @devinci.fr ou @edu.devinci.fr.");
             return;
         }
 
@@ -78,8 +78,8 @@ const Inscription = ({card_id}: InscriptionInterface) => {
                 return;
             }
 
-            if (error instanceof Error && error.message.includes("@devinci.fr ou @edu.vinci.fr")) {
-                setEmailError("L'email doit se terminer par @devinci.fr ou @edu.vinci.fr.");
+            if (error instanceof Error && error.message.includes("@devinci.fr ou @edu.devinci.fr")) {
+                setEmailError("L'email doit se terminer par @devinci.fr ou @edu.devinci.fr.");
                 return;
             }
 

@@ -125,7 +125,7 @@ def submit_data(request: Request, data: ProfileData):
     if not is_school_email(data.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Adresse email invalide: domaines autorises @devinci.fr ou @edu.vinci.fr"
+            detail="Adresse email invalide: domaines autorises @devinci.fr ou @edu.devinci.fr"
         )
 
     supabase.table("CreaLab_visitors").insert({
