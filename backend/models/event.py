@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 
 class EventCreate(BaseModel):
@@ -12,7 +13,7 @@ class EventCreate(BaseModel):
     endStr: str
     duration: str
     color: str
-    id_card: str
+    id_card: Optional[str] = None
 
 
 class Event(EventCreate):

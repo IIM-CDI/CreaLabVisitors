@@ -64,6 +64,7 @@ def login_user(request: Request, data: LoginData):
     card_id = user.get("id_card")
     scanned_card_id = data.scanned_card_id.strip() if data.scanned_card_id else None
 
+    # If a card is scanned, associate it with the account (optional step to make login faster)
     if scanned_card_id:
         validate_card_context(latest_card, scanned_card_id)
 
@@ -83,16 +84,10 @@ def login_user(request: Request, data: LoginData):
 
         supabase.table("CreaLab_visitors").update({"id_card": scanned_card_id}).eq("email", data.email).execute()
         card_id = scanned_card_id
+        latest_card["id"] = card_id
+        latest_card["ts"] = datetime.utcnow()
 
-    if _is_temporary_card(card_id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Scannez une carte pour finaliser la connexion"
-        )
-
-    latest_card["id"] = card_id
-    latest_card["ts"] = datetime.utcnow()
-
+    # Allow login even without a valid card - card scanning is optional and used for faster identification
     return {
         "authenticated": True,
         "card_id": card_id
@@ -114,7 +109,7 @@ def submit_data(request: Request, data: ProfileData):
     if existing_email.data:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Un compte existe déjà avec cet email")
 
-    normalized_card_id = data.card_id.strip()
+    normalized_card_id = data.card_id.strip() if data.card_id else NO_CARD_PLACEHOLDER
     if normalized_card_id == NO_CARD_PLACEHOLDER:
         normalized_card_id = f"{TEMP_CARD_PREFIX}{uuid4().hex[:12]}"
     else:
@@ -144,7 +139,13 @@ def submit_data(request: Request, data: ProfileData):
 def update_profile(request: Request, data: ProfileData):
     logging.info("Updating profile for card: %s", data.card_id)
     validate_origin(request, FRONTEND_URLS)
-    validate_card_context(latest_card, data.card_id)
+    
+    # Don't require strict card validation - user should be able to update profile without Card scan
+    if not data.card_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="card_id is required to update profile"
+        )
 
     supabase.table("CreaLab_visitors").update({
         "first_name": data.first_name,
@@ -158,8 +159,8 @@ def update_profile(request: Request, data: ProfileData):
 @router.get("/get-profile/{card_id}")
 def get_profile(request: Request, card_id: str):
     validate_origin(request, FRONTEND_URLS)
-    validate_card_context(latest_card, card_id)
-
+    
+    # Don't require strict card validation - user should be able to get profile without Card scan
     result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
     if len(result.data) > 0:
         return {"found": True, "data": result.data[0]}

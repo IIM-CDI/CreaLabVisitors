@@ -47,7 +47,7 @@ const Connexion = ({ onLoginSuccess, scannedCardId, onBack }: ConnexionProps) =>
 
 			const data = await response.json();
 
-			if (!response.ok || !data?.authenticated || !data?.card_id) {
+			if (!response.ok || !data?.authenticated) {
 				throw new Error(data?.detail || "Identifiants invalides");
 			}
 

@@ -3,7 +3,8 @@ export interface UserData {
     last_name: string;
     email: string;
     role: string;
-    [key: string]: string;
+    id_card?: string;
+    [key: string]: string | undefined;
 }
 export interface CalendarEvent {
     card_id: string;
@@ -30,7 +31,7 @@ export interface CalendarEventData {
     endStr: string;
     duration: string;
     color: string;
-    id_card: string;
+    id_card?: string;
     accepted: boolean;
 }
 
@@ -44,7 +45,7 @@ export interface FormattedCalendarEvent {
     extendedProps: {
         user: string;
         duration: string;
-        id_card: string;
+        id_card?: string;
         accepted: boolean;
     };
 }
@@ -59,7 +60,7 @@ export interface BackendEvent {
     endStr: string;
     duration: string;
     color: string;
-    id_card: string;
+    id_card?: string;
     accepted: boolean;
 }
 
