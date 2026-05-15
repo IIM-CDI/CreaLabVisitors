@@ -3,7 +3,8 @@ export interface UserData {
     last_name: string;
     email: string;
     role: string;
-    [key: string]: string;
+    id_card?: string;
+    [key: string]: string | undefined;
 }
 export interface CalendarEvent {
     card_id: string;
@@ -24,13 +25,14 @@ export interface CalendarEventData {
     id: string;
     title: string;
     user: string;
+    email?: string;
     start: Date;
     startStr: string;
     end: Date;
     endStr: string;
     duration: string;
     color: string;
-    id_card: string;
+    id_card?: string;
     accepted: boolean;
 }
 
@@ -43,8 +45,9 @@ export interface FormattedCalendarEvent {
     borderColor: string;
     extendedProps: {
         user: string;
+        email?: string;
         duration: string;
-        id_card: string;
+        id_card?: string;
         accepted: boolean;
     };
 }
@@ -53,13 +56,14 @@ export interface BackendEvent {
     id: string;
     title: string;
     user: string;
+    email?: string;
     start: string;
     startStr: string;
     end: string;
     endStr: string;
     duration: string;
     color: string;
-    id_card: string;
+    id_card?: string;
     accepted: boolean;
 }
 

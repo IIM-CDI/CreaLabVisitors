@@ -1,20 +1,17 @@
-import { io, Socket } from "socket.io-client";
+import { getSocket } from './socketClient';
 
 let previousId: string | null = null;
 let onCardScanned: ((id: string) => void) | null = null;
-let socket: Socket | null = null;
 
 export const setCardScanCallback = (callback: (id: string) => void) => {
     onCardScanned = callback;
 };
 
 const initSocket = () => {
-    if (socket) return;
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-    socket = io(apiUrl, { transports: ["websocket"] });
+    const socket = getSocket();
 
     socket.on("connect", () => {
-        console.log("Card socket connected", socket?.id);
+        console.log("Card socket connected", socket.id);
     });
 
     socket.on("card_scanned", (cardId: string) => {

@@ -42,9 +42,15 @@ async def get_card(card_data: CardScan):
 
 @router.get("/check-card/{card_id}")
 def check_existing_card(card_id: str):
+    # Try to find by card_id first
     result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
     exists = len(result.data) > 0
     if exists:
         return {"exists": True, "data": result.data}
     else:
+        # Fallback: also try to find by email (card_id could be an email)
+        result = supabase.table("CreaLab_visitors").select("*").eq("email", card_id).execute()
+        exists = len(result.data) > 0
+        if exists:
+            return {"exists": True, "data": result.data}
         return {"exists": False}

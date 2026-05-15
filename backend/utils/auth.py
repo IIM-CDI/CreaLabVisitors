@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-ALLOWED_SCHOOL_EMAIL_DOMAINS = ("@devinci.fr", "@edu.vinci.fr")
+ALLOWED_SCHOOL_EMAIL_DOMAINS = ("@devinci.fr", "@edu.devinci.fr")
 
 
 def _normalize_origin(value: str) -> str:

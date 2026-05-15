@@ -64,6 +64,7 @@ def login_user(request: Request, data: LoginData):
     card_id = user.get("id_card")
     scanned_card_id = data.scanned_card_id.strip() if data.scanned_card_id else None
 
+    # If a card is scanned, associate it with the account (optional step to make login faster)
     if scanned_card_id:
         validate_card_context(latest_card, scanned_card_id)
 
@@ -83,16 +84,10 @@ def login_user(request: Request, data: LoginData):
 
         supabase.table("CreaLab_visitors").update({"id_card": scanned_card_id}).eq("email", data.email).execute()
         card_id = scanned_card_id
+        latest_card["id"] = card_id
+        latest_card["ts"] = datetime.utcnow()
 
-    if _is_temporary_card(card_id):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Scannez une carte pour finaliser la connexion"
-        )
-
-    latest_card["id"] = card_id
-    latest_card["ts"] = datetime.utcnow()
-
+    # Allow login even without a valid card - card scanning is optional and used for faster identification
     return {
         "authenticated": True,
         "card_id": card_id
@@ -114,7 +109,7 @@ def submit_data(request: Request, data: ProfileData):
     if existing_email.data:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Un compte existe déjà avec cet email")
 
-    normalized_card_id = data.card_id.strip()
+    normalized_card_id = data.card_id.strip() if data.card_id else NO_CARD_PLACEHOLDER
     if normalized_card_id == NO_CARD_PLACEHOLDER:
         normalized_card_id = f"{TEMP_CARD_PREFIX}{uuid4().hex[:12]}"
     else:
@@ -125,7 +120,7 @@ def submit_data(request: Request, data: ProfileData):
     if not is_school_email(data.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Adresse email invalide: domaines autorises @devinci.fr ou @edu.vinci.fr"
+            detail="Adresse email invalide: domaines autorises @devinci.fr ou @edu.devinci.fr"
         )
 
     supabase.table("CreaLab_visitors").insert({
@@ -142,26 +137,31 @@ def submit_data(request: Request, data: ProfileData):
 
 @router.post("/update-profile")
 def update_profile(request: Request, data: ProfileData):
-    logging.info("Updating profile for card: %s", data.card_id)
+    logging.info("Updating profile for email: %s", data.email)
     validate_origin(request, FRONTEND_URLS)
-    validate_card_context(latest_card, data.card_id)
-
+    
+    # Use email as primary identifier for updating profile
+    # This works whether user logged in with card or without
     supabase.table("CreaLab_visitors").update({
         "first_name": data.first_name,
         "last_name": data.last_name,
-        "email": data.email,
         "role": data.role.value
-    }).eq("id_card", data.card_id).execute()
-    return {"message": f"Profil pour la carte {data.card_id} mis à jour avec succès"}
+    }).eq("email", data.email).execute()
+    
+    return {"message": f"Profil pour {data.email} mis à jour avec succès"}
 
 
 @router.get("/get-profile/{card_id}")
 def get_profile(request: Request, card_id: str):
     validate_origin(request, FRONTEND_URLS)
-    validate_card_context(latest_card, card_id)
-
+    
+    # Try to get profile by card_id first (for backward compatibility)
     result = supabase.table("CreaLab_visitors").select("*").eq("id_card", card_id).execute()
     if len(result.data) > 0:
         return {"found": True, "data": result.data[0]}
     else:
+        # Fallback: also search by email (card_id could be an email in some cases)
+        result = supabase.table("CreaLab_visitors").select("*").eq("email", card_id).execute()
+        if len(result.data) > 0:
+            return {"found": True, "data": result.data[0]}
         return {"found": False}
