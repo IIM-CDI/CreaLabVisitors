@@ -5,7 +5,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { EventContentArg } from "@fullcalendar/core";
 import frLocale from '@fullcalendar/core/locales/fr';
-import { io, Socket } from "socket.io-client";
+import getSocket from "../../services/socketClient";
 import "./CalendarComponent.css";
 import "./FullCalendar.css";
 import Sidebar from "../../layout/sidebar/Sidebar";
@@ -39,37 +39,25 @@ const Calendar = ({ card_id, setIsAdmin, setRefreshEvents }: CalendarEvent) => {
     }, [userData, setIsAdmin]);
 
     useEffect(() => {
-        let socket: Socket | null = null;
-        
-        const initSocket = () => {
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+        const socket = getSocket();
 
-            socket = io(apiUrl, {
-                transports: ["websocket"] 
-            });
-
-            socket.on("connect", () => {
-                console.log("Calendar socket connected", socket?.id);
-            });
-
-            socket.on("events_updated", (data: { action: string; event?: CalendarEventData; event_id?: string }) => {
-                console.log(`Event ${data.action}:`, data);
-                fetchEvents();
-            });
-
-            socket.on("disconnect", () => {
-                console.log("Calendar socket disconnected");
-            });
+        const onEventsUpdated = (data: { action: string; event?: CalendarEventData; event_id?: string }) => {
+            console.log(`Event ${data.action}:`, data);
+            fetchEvents();
         };
 
-        if (card_id) {
-            initSocket();
-        }
+        socket.on("connect", () => {
+            console.log("Calendar socket connected", socket.id);
+        });
+
+        socket.on("events_updated", onEventsUpdated);
+
+        socket.on("disconnect", () => {
+            console.log("Calendar socket disconnected");
+        });
 
         return () => {
-            if (socket) {
-                socket.disconnect();
-            }
+            socket.off("events_updated", onEventsUpdated);
         };
     }, [card_id, fetchEvents]);
 

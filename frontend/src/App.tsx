@@ -5,6 +5,7 @@ import Calendar from './pages/Calendar/Calendar';
 import Inscription from './components/Inscription/Inscription';
 import Connexion from './components/Connexion/Connexion';
 import { setCardScanCallback } from './services/cardScanListener';
+import { getApiUrl } from './services/api';
 import Bouton from './components/Bouton/Bouton';
 
 type AppState = 'waiting' | 'login' | 'inscription' | 'calendar' | 'cardNotFound' | 'linkLogin';
@@ -28,7 +29,7 @@ function App() {
   useEffect(() => {
     const checkExistingCard = async (id: string) => {
       try {
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+        const apiUrl = getApiUrl();
         const response = await fetch(`${apiUrl}/check-card/${id}`);
         const data = await response.json();
         if (data.exists) {

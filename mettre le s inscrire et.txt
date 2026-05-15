@@ -1,0 +1,34 @@
+mettre le s'inscrire et le connexion à coté
+cacher id card et role
+changer le log apres inscription
+corriger les fautes de frappes (dans le log apres inscription)
+ajouterelemnts pour clic et drag les evenements (ou clicquer sur calendrier directement pour creer un event)
+event custom --> ajouter descriptif à l'evenemtns et possibilité de selectionner plusiseurs tags (genre impression, peintures, etc..) / Laisser vite les créneax de base (sinon l'event se place a l'heure meme en validant)
+Separer les impressions perso / école dans les events pre fait (voir si atereil donner par l'utilisateur ou le crealab)
+Si @devin alors staff / si edu alors etudiant
+
+TODO projet (priorisé)
+
+[UI / Auth]
+- Aligner les boutons « Inscription » et « Connexion » sur la même ligne.
+- Masquer les champs sensibles (ID card, rôle) dans les formulaires/écrans publics.
+- Mettre à jour le message affiché après inscription.
+- Relire et corriger les libellés/messages pour supprimer les fautes.
+
+[Calendrier / Création d’événements]
+- Ajouter la création d’événement par clic direct sur le calendrier.
+- Ajouter le glisser-déposer d’événements.
+- Conserver les créneaux par défaut lors de la validation (éviter placement à l’heure courante).
+
+[Modèle d’événement]
+- Ajouter un champ « description » pour les événements personnalisés.
+- Permettre la sélection multiple de tags (ex. impression, peinture, etc.).
+
+[Catégorisation]
+- Séparer clairement les impressions « perso » vs « école » dans les événements prédéfinis.
+- Ajouter la source du matériel (utilisateur ou CreaLab) et l’afficher dans l’événement.
+
+[Qualité / Validation]
+- Vérifier les règles de visibilité des champs selon le rôle.
+- Tester les parcours complets: inscription, connexion, création événement, édition, drag & drop.
+- Ajouter une passe QA finale sur l’UX et les textes FR.
